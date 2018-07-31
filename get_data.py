@@ -7,7 +7,7 @@ path = 'F:\DS 6999\data\HAPT\RawData\*.txt'
 files = glob.glob(path)
 
 # This is the directory where you want to write the new csvs to
-os.chdir('F:\\DS 6999\\data\\HAPT\\RawData\\NewData')
+os.chdir('F:\\DS 6999\\project\\NewData')
 
 def get_data():
     """
@@ -98,17 +98,51 @@ def get_data():
                     acc_hz_5 = acc_hz_5.append(df2)
                 else:
                     gyro_hz_5 = gyro_hz_5.append(df2)
-
+    
+    # Merge the acc and gyro dataframes for a specific frequency
+    # To make this shorter, find a way to iterate this through each hz
+    # Also make sure to order the columns in a way that makes sense
+    
+    print('1/4 Processing hz5.')
+    hz_5 = acc_hz_5
+    hz_5['tGyro-X'] = gyro_hz_5['tGyro-X']
+    hz_5['tGyro-Y'] = gyro_hz_5['tGyro-Y']
+    hz_5['tGyro-Z'] = gyro_hz_5['tGyro-Z']
+    hz_5 = hz_5[['experimentID','userID','activityID','tAcc-X', 'tAcc-Y', 'tAcc-Z','tGyro-X', 'tGyro-Y', 'tGyro-Z']]
+    
+    print('2/4 Processing hz10.')
+    hz_10 = acc_hz_10
+    hz_10['tGyro-X'] = gyro_hz_10['tGyro-X']
+    hz_10['tGyro-Y'] = gyro_hz_10['tGyro-Y']
+    hz_10['tGyro-Z'] = gyro_hz_10['tGyro-Z']
+    hz_10 = hz_10[['experimentID','userID','activityID','tAcc-X', 'tAcc-Y', 'tAcc-Z','tGyro-X', 'tGyro-Y', 'tGyro-Z']]
+    
+    print('3/4 Processing hz25.')
+    hz_25 = acc_hz_25
+    hz_25['tGyro-X'] = gyro_hz_25['tGyro-X']
+    hz_25['tGyro-Y'] = gyro_hz_25['tGyro-Y']
+    hz_25['tGyro-Z'] = gyro_hz_25['tGyro-Z']
+    hz_25 = hz_25[['experimentID','userID','activityID','tAcc-X', 'tAcc-Y', 'tAcc-Z','tGyro-X', 'tGyro-Y', 'tGyro-Z']]
+    
+    print('4/4 Processing hz50.')
+    hz_50 = acc_hz_50
+    hz_50['tGyro-X'] = gyro_hz_50['tGyro-X']
+    hz_50['tGyro-Y'] = gyro_hz_50['tGyro-Y']
+    hz_50['tGyro-Z'] = gyro_hz_50['tGyro-Z']
+    hz_50 = hz_50[['experimentID','userID','activityID','tAcc-X', 'tAcc-Y', 'tAcc-Z','tGyro-X', 'tGyro-Y', 'tGyro-Z']]
+    
     # Output the following files which are master files that contain all
     # the information in the raw data files, including downsampled copies
-    acc_hz_5.to_csv('acc_5hz.csv',sep='\t')
-    acc_hz_10.to_csv('acc_10hz.csv',sep='\t')
-    acc_hz_25.to_csv('acc_25hz.csv',sep='\t')
-    acc_hz_50.to_csv('acc_50hz.csv',sep='\t')
-    gyro_hz_5.to_csv('gyro_5hz.csv',sep='\t')
-    gyro_hz_10.to_csv('gyro_10hz.csv',sep='\t')
-    gyro_hz_25.to_csv('gyro_25hz.csv',sep='\t')
-    gyro_hz_50.to_csv('gyro_50hz.csv',sep='\t')
+    print('1/4 Printing 5hz.csv')
+    hz_5.to_csv('5hz.csv',sep='\t')
+    print('2/4 Printing 10hz.csv')
+    hz_10.to_csv('10hz.csv',sep='\t')
+    print('3/4 Printing 25hz.csv')
+    hz_25.to_csv('25hz.csv',sep='\t')
+    print('4/4 Printing 50hz.csv')
+    hz_50.to_csv('50hz.csv',sep='\t')
+    
+    print('Done')
     
 if __name__=='__main__':
     get_data()
