@@ -1,8 +1,11 @@
 import glob
+import math
 import os
 import pandas as pd
-import spectrum
-# !pip install spectrum
+from spectrum import arburg
+# On anaconda:
+# conda config --add channels conda-forge
+# conda install spectrum
 
 # This is the directory where your hz data files are located
 path = 'F:\\DS 6999\\project\\hzData\\*.csv'
@@ -136,16 +139,53 @@ for name in files[:1]: # Remove the limiter [:1] before the final product
         # tBodyAcc-ARCoeff-1             
         # tBodyAcc-ARCoeff-2             
         # tBodyAcc-ARCoeff-3             
-        # tBodyAcc-ARCoeff-4             
+        # tBodyAcc-ARCoeff-4    
+        a=group['tAcc-X'].apply(lambda x: list(x)).drop(columns='experimentID').reset_index(drop=True)
+        b=pd.DataFrame(a)
+        # Change this std value for different sensitivities.
+        mask=((group['tAcc-X'].std()>0.05) & (group['tAcc-X'].count()>3))['tAcc-X'].values.tolist()
+        b_valid = b[mask]
+        c=b_valid[0].apply(lambda x: arburg(x,4))
+        d = pd.DataFrame(c)
+        e=d.apply(lambda x: [y[0] for y in list(x)])
+        df_feature.append(e.apply(lambda x: [y[0] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tBodyAcc-ARCoeff-1'}))
+        df_feature.append(e.apply(lambda x: [y[1] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tBodyAcc-ARCoeff-2'}))
+        df_feature.append(e.apply(lambda x: [y[2] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tBodyAcc-ARCoeff-3'}))
+        df_feature.append(e.apply(lambda x: [y[3] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tBodyAcc-ARCoeff-4'}))
+        
         # tBodyAcc-ARCoeff-5             
         # tBodyAcc-ARCoeff-6             
         # tBodyAcc-ARCoeff-7             
-        # tBodyAcc-ARCoeff-8             
+        # tBodyAcc-ARCoeff-8
+        a=group['tAcc-Y'].apply(lambda x: list(x)).drop(columns='experimentID').reset_index(drop=True)
+        b=pd.DataFrame(a)
+        # Change this std value for different sensitivities.
+        mask=((group['tAcc-Y'].std()>0.05) & (group['tAcc-Y'].count()>3))['tAcc-Y'].values.tolist()
+        b_valid = b[mask]
+        c=b_valid[0].apply(lambda x: arburg(x,4))
+        d = pd.DataFrame(c)
+        e=d.apply(lambda x: [y[0] for y in list(x)])
+        df_feature.append(e.apply(lambda x: [y[0] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tBodyAcc-ARCoeff-5'}))
+        df_feature.append(e.apply(lambda x: [y[1] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tBodyAcc-ARCoeff-6'}))
+        df_feature.append(e.apply(lambda x: [y[2] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tBodyAcc-ARCoeff-7'}))
+        df_feature.append(e.apply(lambda x: [y[3] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tBodyAcc-ARCoeff-8'}))         
+
         # tBodyAcc-ARCoeff-9             
         # tBodyAcc-ARCoeff-10            
         # tBodyAcc-ARCoeff-11            
         # tBodyAcc-ARCoeff-12
-        
+        a=group['tAcc-Z'].apply(lambda x: list(x)).drop(columns='experimentID').reset_index(drop=True)
+        b=pd.DataFrame(a)
+        # Change this std value for different sensitivities.
+        mask=((group['tAcc-Z'].std()>0.05) & (group['tAcc-Z'].count()>3))['tAcc-Z'].values.tolist()
+        b_valid = b[mask]
+        c=b_valid[0].apply(lambda x: arburg(x,4))
+        d = pd.DataFrame(c)
+        e=d.apply(lambda x: [y[0] for y in list(x)])
+        df_feature.append(e.apply(lambda x: [y[0] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tBodyAcc-ARCoeff-9'}))
+        df_feature.append(e.apply(lambda x: [y[1] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tBodyAcc-ARCoeff-10'}))
+        df_feature.append(e.apply(lambda x: [y[2] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tBodyAcc-ARCoeff-11'}))
+        df_feature.append(e.apply(lambda x: [y[3] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tBodyAcc-ARCoeff-12'}))
         
         # tBodyAcc-Correlation-1         
         # tBodyAcc-Correlation-2         
