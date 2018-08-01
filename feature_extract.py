@@ -1,6 +1,8 @@
 import glob
 import os
 import pandas as pd
+import spectrum
+# !pip install spectrum
 
 # This is the directory where your hz data files are located
 path = 'F:\\DS 6999\\project\\hzData\\*.csv'
@@ -29,7 +31,7 @@ ct = 0
 # Check all 4 hz files
 for name in files[:1]: # Remove the limiter [:1] before the final product
     ct += 1
-    print(ct, "/", 8, name)
+    print(ct, "/", 4, name)
 
     # Set the value of hz based on the name of the file
     if '5hz' in name:
@@ -62,7 +64,7 @@ for name in files[:1]: # Remove the limiter [:1] before the final product
         # 10*5=50 observations are grouped together within an experiment ID.
         # And in this case, 50 observations at 5hz = 10 seconds
         group = df_out.groupby(['experimentID',sub_index//(seconds*hz)*hz], as_index=False)
-        
+        group_square = pow(df_out,2).groupby(['experimentID',sub_index//(seconds*hz)*hz], as_index=False)
         # Initilze the feature list, which is a list that contains several
         # dataframes. At the end all of these dataframes will be concatinated
         df_feature = [group['index','tAcc-X','tAcc-Y','tAcc-Z','tGyro-X','tGyro-Y','tGyro-Z','experimentID','userID','activityID'].first()]
@@ -114,13 +116,23 @@ for name in files[:1]: # Remove the limiter [:1] before the final product
         
         # tBodyAcc-Energy-1
         # tBodyAcc-Energy-2              
-        # tBodyAcc-Energy-3              
+        # tBodyAcc-Energy-3
+        a=group_square['tAcc-X','tAcc-Y','tAcc-Z'].sum().drop(columns=['experimentID'])
+        b=group['tAcc-X','tAcc-Y','tAcc-Z'].count().drop(columns=['experimentID'])
+        df_feature.append((a/b).rename(columns={'tAcc-X':'tBodyAcc-Energy-1','tAcc-Y':'tBodyAcc-Energy-2','tAcc-Z':'tBodyAcc-Energy-3'}))
+        
         # tBodyAcc-IQR-1         
         # tBodyAcc-IQR-2                 
         # tBodyAcc-IQR-3      
+        a=group['tAcc-X','tAcc-Y','tAcc-Z'].quantile(0.75).reset_index(drop=True)
+        b=group['tAcc-X','tAcc-Y','tAcc-Z'].quantile(0.25).reset_index(drop=True)
+        df_feature.append((a-b).rename(columns={'tAcc-X':'tBodyAcc-IQR-1','tAcc-Y':'tBodyAcc-IQR-2','tAcc-Z':'tBodyAcc-IQR-3'}))
+        
         # tBodyAcc-ropy-1                
         # tBodyAcc-ropy-1                
-        # tBodyAcc-ropy-1      
+        # tBodyAcc-ropy-1   
+        """"""
+        
         # tBodyAcc-ARCoeff-1             
         # tBodyAcc-ARCoeff-2             
         # tBodyAcc-ARCoeff-3             
@@ -132,7 +144,9 @@ for name in files[:1]: # Remove the limiter [:1] before the final product
         # tBodyAcc-ARCoeff-9             
         # tBodyAcc-ARCoeff-10            
         # tBodyAcc-ARCoeff-11            
-        # tBodyAcc-ARCoeff-12            
+        # tBodyAcc-ARCoeff-12
+        
+        
         # tBodyAcc-Correlation-1         
         # tBodyAcc-Correlation-2         
         # tBodyAcc-Correlation-3         
