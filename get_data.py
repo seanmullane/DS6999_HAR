@@ -1,13 +1,15 @@
 import glob
 import os
 import pandas as pd
+import scipy
+from scipy import signal
 
 # This is the directory where your raw data files are located
 path = 'F:\DS 6999\data\HAPT\RawData\*.txt'
 files = glob.glob(path)
 
 # This is the directory where you want to write the new csvs to
-os.chdir('F:\\DS 6999\\project\\NewData')
+os.chdir('F:\DS 6999\project\hzData')
 
 def get_data():
     """
@@ -17,7 +19,7 @@ def get_data():
     """
     
     # This is just reading in labels.txt
-    type_file = pd.read_table(files[-1], sep='\s', header=None)
+    type_file = pd.read_table(files[-1], sep='\s', header=None, engine='python')
     type_file.columns = ['experimentID','userID','activityID','start','end']
     
     # Initialize the final output dataframes
@@ -35,17 +37,15 @@ def get_data():
         print(ct, "/", 122, name)
 
         # Read in the raw data
-        df=pd.read_table(name, sep='\s', header=None)
+        df=pd.read_table(name, sep='\s', header=None, engine='python')
         
         # If accelerometer data, then set the variable filename to something
         # like 'acc_exp01_user01' and name the columns accordingly
         if 'acc' in name[-21:-4]:
             filename = name[-20:-4]
-            df.columns = ['tAcc-X', 'tAcc-Y', 'tAcc-Z']
         # If gyroscopic data, use different headers
         else:
             filename = name[-21:-4]
-            df.columns = ['tGyro-X', 'tGyro-Y', 'tGyro-Z']
             
         # Extract the experimentId and userID values from the filename
         df['experimentID'] = int(name[-13:-11])
@@ -74,62 +74,96 @@ def get_data():
         # Iterate through each of the frequencies, aka downsampling
         for hz in [5,10,25,50]:
             # Downsample by observing every n-th entry based on the ratio
+            butter_filt = scipy.signal.butter(3, 20/(50/2), analog=True)
+            butter_filt_2 = scipy.signal.butter(3, 0.3/(50/2), analog=True)
             if hz==50:
-                df2 = df
+                df2 = df.reset_index(drop=True)
+                df_filt=df[[0,1,2]].apply(scipy.signal.medfilt)
+                df_filt_2 = df_filt.apply(lambda x: scipy.signal.lfilter(butter_filt[0],butter_filt[1],x))
+                df_out = pd.concat([df2[['experimentID', 'userID', 'activityID']],df_filt_2], axis=1)
                 if 'acc' in filename:
-                    acc_hz_50 = acc_hz_50.append(df2)
+                    df_g = df_filt.apply(lambda x: scipy.signal.lfilter(butter_filt_2[0],butter_filt_2[1],x))
+                    df_out['tGravityAcc-X'] = df_g[0]
+                    df_out['tGravityAcc-Y'] = df_g[1]
+                    df_out['tGravityAcc-Z'] = df_g[2]
+                    df_out = df_out.rename(columns={0:'tBodyAcc-X',1:'tBodyAcc-Y',2:'tBodyAcc-Z'})
+                    acc_hz_50 = acc_hz_50.append(df_out)
                 else:
-                    gyro_hz_50 = gyro_hz_50.append(df2)
+                    df_out = df_out.rename(columns={0:'tBodyGyro-X',1:'tBodyGyro-Y',2:'tBodyGyro-Z'})
+                    gyro_hz_50 = gyro_hz_50.append(df_out)
             elif hz==25:
-                df2 = df[df.index%2==0]
+                df2 = df[df.index%2==0].reset_index(drop=True)
+                df_filt=df2[[0,1,2]].apply(scipy.signal.medfilt)
+                df_filt_2 = df_filt.apply(lambda x: scipy.signal.lfilter(butter_filt[0],butter_filt[1],x))
+                df_out = pd.concat([df2[['experimentID', 'userID', 'activityID']],df_filt_2], axis=1)
                 if 'acc' in filename:
-                    acc_hz_25 = acc_hz_25.append(df2)
+                    df_g = df_filt.apply(lambda x: scipy.signal.lfilter(butter_filt_2[0],butter_filt_2[1],x))
+                    df_out['tGravityAcc-X'] = df_g[0]
+                    df_out['tGravityAcc-Y'] = df_g[1]
+                    df_out['tGravityAcc-Z'] = df_g[2]
+                    df_out = df_out.rename(columns={0:'tBodyAcc-X',1:'tBodyAcc-Y',2:'tBodyAcc-Z'})
+                    acc_hz_25 = acc_hz_25.append(df_out)
                 else:
-                    gyro_hz_25 = gyro_hz_25.append(df2)
+                    df_out = df_out.rename(columns={0:'tBodyGyro-X',1:'tBodyGyro-Y',2:'tBodyGyro-Z'})
+                    gyro_hz_25 = gyro_hz_25.append(df_out)
             elif hz==10:
-                df2 = df[df.index%5==0]
+                df2 = df[df.index%5==0].reset_index(drop=True)
+                df_filt=df2[[0,1,2]].apply(scipy.signal.medfilt)
+                df_filt_2 = df_filt.apply(lambda x: scipy.signal.lfilter(butter_filt[0],butter_filt[1],x))
+                df_out = pd.concat([df2[['experimentID', 'userID', 'activityID']],df_filt_2], axis=1)
                 if 'acc' in filename:
-                    acc_hz_10 = acc_hz_10.append(df2)
+                    df_g = df_filt.apply(lambda x: scipy.signal.lfilter(butter_filt_2[0],butter_filt_2[1],x))
+                    df_out['tGravityAcc-X'] = df_g[0]
+                    df_out['tGravityAcc-Y'] = df_g[1]
+                    df_out['tGravityAcc-Z'] = df_g[2]
+                    df_out = df_out.rename(columns={0:'tBodyAcc-X',1:'tBodyAcc-Y',2:'tBodyAcc-Z'})
+                    acc_hz_10 = acc_hz_10.append(df_out)
                 else:
-                    gyro_hz_10 = gyro_hz_10.append(df2)
+                    df_out = df_out.rename(columns={0:'tBodyGyro-X',1:'tBodyGyro-Y',2:'tBodyGyro-Z'})
+                    gyro_hz_10 = gyro_hz_10.append(df_out)
             else:
-                df2 = df[df.index%10==0]
+                df2 = df[df.index%10==0].reset_index(drop=True)
+                df_filt=df2[[0,1,2]].apply(scipy.signal.medfilt)
+                df_filt_2 = df_filt.apply(lambda x: scipy.signal.lfilter(butter_filt[0],butter_filt[1],x))
+                df_out = pd.concat([df2[['experimentID', 'userID', 'activityID']],df_filt_2], axis=1)
                 if 'acc' in filename:
-                    acc_hz_5 = acc_hz_5.append(df2)
+                    df_g = df_filt.apply(lambda x: scipy.signal.lfilter(butter_filt_2[0],butter_filt_2[1],x))
+                    df_out['tGravityAcc-X'] = df_g[0]
+                    df_out['tGravityAcc-Y'] = df_g[1]
+                    df_out['tGravityAcc-Z'] = df_g[2]
+                    df_out = df_out.rename(columns={0:'tBodyAcc-X',1:'tBodyAcc-Y',2:'tBodyAcc-Z'})
+                    acc_hz_5 = acc_hz_5.append(df_out)
                 else:
-                    gyro_hz_5 = gyro_hz_5.append(df2)
-    
+                    df_out = df_out.rename(columns={0:'tBodyGyro-X',1:'tBodyGyro-Y',2:'tBodyGyro-Z'})
+                    gyro_hz_5 = gyro_hz_5.append(df_out)
+
     # Merge the acc and gyro dataframes for a specific frequency
     # To make this shorter, find a way to iterate this through each hz
     # Also make sure to order the columns in a way that makes sense
-    
-    print('1/4 Processing hz5.')
     hz_5 = acc_hz_5
-    hz_5['tGyro-X'] = gyro_hz_5['tGyro-X']
-    hz_5['tGyro-Y'] = gyro_hz_5['tGyro-Y']
-    hz_5['tGyro-Z'] = gyro_hz_5['tGyro-Z']
-    hz_5 = hz_5[['experimentID','userID','activityID','tAcc-X', 'tAcc-Y', 'tAcc-Z','tGyro-X', 'tGyro-Y', 'tGyro-Z']]
-    
-    print('2/4 Processing hz10.')
     hz_10 = acc_hz_10
-    hz_10['tGyro-X'] = gyro_hz_10['tGyro-X']
-    hz_10['tGyro-Y'] = gyro_hz_10['tGyro-Y']
-    hz_10['tGyro-Z'] = gyro_hz_10['tGyro-Z']
-    hz_10 = hz_10[['experimentID','userID','activityID','tAcc-X', 'tAcc-Y', 'tAcc-Z','tGyro-X', 'tGyro-Y', 'tGyro-Z']]
-    
-    print('3/4 Processing hz25.')
     hz_25 = acc_hz_25
-    hz_25['tGyro-X'] = gyro_hz_25['tGyro-X']
-    hz_25['tGyro-Y'] = gyro_hz_25['tGyro-Y']
-    hz_25['tGyro-Z'] = gyro_hz_25['tGyro-Z']
-    hz_25 = hz_25[['experimentID','userID','activityID','tAcc-X', 'tAcc-Y', 'tAcc-Z','tGyro-X', 'tGyro-Y', 'tGyro-Z']]
-    
-    print('4/4 Processing hz50.')
     hz_50 = acc_hz_50
-    hz_50['tGyro-X'] = gyro_hz_50['tGyro-X']
-    hz_50['tGyro-Y'] = gyro_hz_50['tGyro-Y']
-    hz_50['tGyro-Z'] = gyro_hz_50['tGyro-Z']
-    hz_50 = hz_50[['experimentID','userID','activityID','tAcc-X', 'tAcc-Y', 'tAcc-Z','tGyro-X', 'tGyro-Y', 'tGyro-Z']]
+    
+    hz_5['tBodyGyro-X'] = gyro_hz_5['tBodyGyro-X']
+    hz_5['tBodyGyro-Y'] = gyro_hz_5['tBodyGyro-Y']
+    hz_5['tBodyGyro-Z'] = gyro_hz_5['tBodyGyro-Z']
+    hz_5 = hz_5[['experimentID','userID','activityID','tBodyAcc-X', 'tBodyAcc-Y', 'tBodyAcc-Z', 'tGravityAcc-X', 'tGravityAcc-Y', 'tGravityAcc-Z', 'tBodyGyro-X', 'tBodyGyro-Y', 'tBodyGyro-Z']]
+
+    hz_10['tBodyGyro-X'] = gyro_hz_10['tBodyGyro-X']
+    hz_10['tBodyGyro-Y'] = gyro_hz_10['tBodyGyro-Y']
+    hz_10['tBodyGyro-Z'] = gyro_hz_10['tBodyGyro-Z']
+    hz_10 = hz_10[['experimentID','userID','activityID','tBodyAcc-X', 'tBodyAcc-Y', 'tBodyAcc-Z', 'tGravityAcc-X', 'tGravityAcc-Y', 'tGravityAcc-Z', 'tBodyGyro-X', 'tBodyGyro-Y', 'tBodyGyro-Z']]
+
+    hz_25['tBodyGyro-X'] = gyro_hz_25['tBodyGyro-X']
+    hz_25['tBodyGyro-Y'] = gyro_hz_25['tBodyGyro-Y']
+    hz_25['tBodyGyro-Z'] = gyro_hz_25['tBodyGyro-Z']
+    hz_25 = hz_25[['experimentID','userID','activityID','tBodyAcc-X', 'tBodyAcc-Y', 'tBodyAcc-Z', 'tGravityAcc-X', 'tGravityAcc-Y', 'tGravityAcc-Z', 'tBodyGyro-X', 'tBodyGyro-Y', 'tBodyGyro-Z']]
+    
+    hz_50['tBodyGyro-X'] = gyro_hz_50['tBodyGyro-X']
+    hz_50['tBodyGyro-Y'] = gyro_hz_50['tBodyGyro-Y']
+    hz_50['tBodyGyro-Z'] = gyro_hz_50['tBodyGyro-Z']
+    hz_50 = hz_50[['experimentID','userID','activityID','tBodyAcc-X', 'tBodyAcc-Y', 'tBodyAcc-Z', 'tGravityAcc-X', 'tGravityAcc-Y', 'tGravityAcc-Z', 'tBodyGyro-X', 'tBodyGyro-Y', 'tBodyGyro-Z']]
     
     # Output the following files which are master files that contain all
     # the information in the raw data files, including downsampled copies

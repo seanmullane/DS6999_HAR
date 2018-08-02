@@ -1,5 +1,4 @@
 import glob
-import math
 import os
 import pandas as pd
 from spectrum import arburg
@@ -13,13 +12,6 @@ files = glob.glob(path)
 
 # This is the directory where you want to write the new csvs to
 os.chdir('F:\\DS 6999\\project\\FeatureData')
-
-# Here is where we'll make custom functions like sma() to pass later on
-def sma():
-    pass
-
-def exp_2(v):
-    pass
 
 # Ignore this for now, when the program is complete this will be in use
 # =============================================================================
@@ -70,7 +62,7 @@ for name in files[:1]: # Remove the limiter [:1] before the final product
         group_square = pow(df_out,2).groupby(['experimentID',sub_index//(seconds*hz)*hz], as_index=False)
         # Initilze the feature list, which is a list that contains several
         # dataframes. At the end all of these dataframes will be concatinated
-        df_feature = [group['index','tAcc-X','tAcc-Y','tAcc-Z','tGyro-X','tGyro-Y','tGyro-Z','experimentID','userID','activityID'].first()]
+        df_feature = [group['index','tBodyAcc-X','tBodyAcc-Y','tBodyAcc-Z','tGravityAcc-X','tGravityAcc-Y','tGravityAcc-Z','tBodyGyro-X','tBodyGyro-Y','tBodyGyro-Z','experimentID','userID','activityID'].first()]
 
         # Tracks progress
         print('Window in seconds:',seconds)
@@ -92,27 +84,27 @@ for name in files[:1]: # Remove the limiter [:1] before the final product
         # tBodyAcc-Mean-1
         # tBodyAcc-Mean-2                
         # tBodyAcc-Mean-3
-        df_feature.append(group['tAcc-X','tAcc-Y','tAcc-Z'].mean().rename(columns={'tAcc-X':'tBodyAcc-Mean-1','tAcc-Y':'tBodyAcc-Mean-2','tAcc-Z':'tBodyAcc-Mean-3'}).drop(columns=['experimentID']))
+        df_feature.append(group['tBodyAcc-X','tBodyAcc-Y','tBodyAcc-Z'].mean().rename(columns={'tBodyAcc-X':'tBodyAcc-Mean-1','tBodyAcc-Y':'tBodyAcc-Mean-2','tBodyAcc-Z':'tBodyAcc-Mean-3'}).drop(columns=['experimentID']))
 
         # tBodyAcc-STD-1                 
         # tBodyAcc-STD-2                 
         # tBodyAcc-STD-3                 
-        df_feature.append(group['tAcc-X','tAcc-Y','tAcc-Z'].std().rename(columns={'tAcc-X':'tBodyAcc-STD-1','tAcc-Y':'tBodyAcc-STD-2','tAcc-Z':'tBodyAcc-STD-3'}).drop(columns=['experimentID']))
+        df_feature.append(group['tBodyAcc-X','tBodyAcc-Y','tBodyAcc-Z'].std().rename(columns={'tBodyAcc-X':'tBodyAcc-STD-1','tBodyAcc-Y':'tBodyAcc-STD-2','tBodyAcc-Z':'tBodyAcc-STD-3'}).drop(columns=['experimentID']))
           
         # tBodyAcc-Mad-1
         # tBodyAcc-Mad-2                 
         # tBodyAcc-Mad-3                 
-        df_feature.append(group['tAcc-X','tAcc-Y','tAcc-Z'].mad().rename(columns={'tAcc-X':'tBodyAcc-Mad-1','tAcc-Y':'tBodyAcc-Mad-2','tAcc-Z':'tBodyAcc-Mad-3'}).reset_index(drop=True))
+        df_feature.append(group['tBodyAcc-X','tBodyAcc-Y','tBodyAcc-Z'].mad().rename(columns={'tBodyAcc-X':'tBodyAcc-Mad-1','tBodyAcc-Y':'tBodyAcc-Mad-2','tBodyAcc-Z':'tBodyAcc-Mad-3'}).reset_index(drop=True))
 
         # tBodyAcc-Max-1
         # tBodyAcc-Max-2                 
         # tBodyAcc-Max-3                 
-        df_feature.append(group['tAcc-X','tAcc-Y','tAcc-Z'].max().rename(columns={'tAcc-X':'tBodyAcc-Max-1','tAcc-Y':'tBodyAcc-Max-2','tAcc-Z':'tBodyAcc-Max-3'}).drop(columns=['experimentID']))
+        df_feature.append(group['tBodyAcc-X','tBodyAcc-Y','tBodyAcc-Z'].max().rename(columns={'tBodyAcc-X':'tBodyAcc-Max-1','tBodyAcc-Y':'tBodyAcc-Max-2','tBodyAcc-Z':'tBodyAcc-Max-3'}).drop(columns=['experimentID']))
 
         # tBodyAcc-Min-1                 
         # tBodyAcc-Min-2                 
         # tBodyAcc-Min-3                 
-        df_feature.append(group['tAcc-X','tAcc-Y','tAcc-Z'].min().rename(columns={'tAcc-X':'tBodyAcc-Min-1','tAcc-Y':'tBodyAcc-Min-2','tAcc-Z':'tBodyAcc-Min-3'}).drop(columns=['experimentID']))
+        df_feature.append(group['tBodyAcc-X','tBodyAcc-Y','tBodyAcc-Z'].min().rename(columns={'tBodyAcc-X':'tBodyAcc-Min-1','tBodyAcc-Y':'tBodyAcc-Min-2','tBodyAcc-Z':'tBodyAcc-Min-3'}).drop(columns=['experimentID']))
 
         # tBodyAcc-SMA-1
         """"""
@@ -120,16 +112,16 @@ for name in files[:1]: # Remove the limiter [:1] before the final product
         # tBodyAcc-Energy-1
         # tBodyAcc-Energy-2              
         # tBodyAcc-Energy-3
-        a=group_square['tAcc-X','tAcc-Y','tAcc-Z'].sum().drop(columns=['experimentID'])
-        b=group['tAcc-X','tAcc-Y','tAcc-Z'].count().drop(columns=['experimentID'])
-        df_feature.append((a/b).rename(columns={'tAcc-X':'tBodyAcc-Energy-1','tAcc-Y':'tBodyAcc-Energy-2','tAcc-Z':'tBodyAcc-Energy-3'}))
+        a=group_square['tBodyAcc-X','tBodyAcc-Y','tBodyAcc-Z'].sum().drop(columns=['experimentID'])
+        b=group['tBodyAcc-X','tBodyAcc-Y','tBodyAcc-Z'].count().drop(columns=['experimentID'])
+        df_feature.append((a/b).rename(columns={'tBodyAcc-X':'tBodyAcc-Energy-1','tBodyAcc-Y':'tBodyAcc-Energy-2','tBodyAcc-Z':'tBodyAcc-Energy-3'}))
         
         # tBodyAcc-IQR-1         
         # tBodyAcc-IQR-2                 
         # tBodyAcc-IQR-3      
-        a=group['tAcc-X','tAcc-Y','tAcc-Z'].quantile(0.75).reset_index(drop=True)
-        b=group['tAcc-X','tAcc-Y','tAcc-Z'].quantile(0.25).reset_index(drop=True)
-        df_feature.append((a-b).rename(columns={'tAcc-X':'tBodyAcc-IQR-1','tAcc-Y':'tBodyAcc-IQR-2','tAcc-Z':'tBodyAcc-IQR-3'}))
+        a=group['tBodyAcc-X','tBodyAcc-Y','tBodyAcc-Z'].quantile(0.75).reset_index(drop=True)
+        b=group['tBodyAcc-X','tBodyAcc-Y','tBodyAcc-Z'].quantile(0.25).reset_index(drop=True)
+        df_feature.append((a-b).rename(columns={'tBodyAcc-X':'tBodyAcc-IQR-1','tBodyAcc-Y':'tBodyAcc-IQR-2','tBodyAcc-Z':'tBodyAcc-IQR-3'}))
         
         # tBodyAcc-ropy-1                
         # tBodyAcc-ropy-1                
@@ -140,10 +132,10 @@ for name in files[:1]: # Remove the limiter [:1] before the final product
         # tBodyAcc-ARCoeff-2             
         # tBodyAcc-ARCoeff-3             
         # tBodyAcc-ARCoeff-4    
-        a=group['tAcc-X'].apply(lambda x: list(x)).drop(columns='experimentID').reset_index(drop=True)
+        a=group['tBodyAcc-X'].apply(lambda x: list(x)).drop(columns='experimentID').reset_index(drop=True)
         b=pd.DataFrame(a)
         # Change this std value for different sensitivities.
-        mask=((group['tAcc-X'].std()>0.05) & (group['tAcc-X'].count()>3))['tAcc-X'].values.tolist()
+        mask=((True) & (group['tBodyAcc-X'].count()>3))['tBodyAcc-X'].values.tolist()
         b_valid = b[mask]
         c=b_valid[0].apply(lambda x: arburg(x,4))
         d = pd.DataFrame(c)
@@ -157,10 +149,10 @@ for name in files[:1]: # Remove the limiter [:1] before the final product
         # tBodyAcc-ARCoeff-6             
         # tBodyAcc-ARCoeff-7             
         # tBodyAcc-ARCoeff-8
-        a=group['tAcc-Y'].apply(lambda x: list(x)).drop(columns='experimentID').reset_index(drop=True)
+        a=group['tBodyAcc-Y'].apply(lambda x: list(x)).drop(columns='experimentID').reset_index(drop=True)
         b=pd.DataFrame(a)
         # Change this std value for different sensitivities.
-        mask=((group['tAcc-Y'].std()>0.05) & (group['tAcc-Y'].count()>3))['tAcc-Y'].values.tolist()
+        mask=((True) & (group['tBodyAcc-Y'].count()>3))['tBodyAcc-Y'].values.tolist()
         b_valid = b[mask]
         c=b_valid[0].apply(lambda x: arburg(x,4))
         d = pd.DataFrame(c)
@@ -174,10 +166,10 @@ for name in files[:1]: # Remove the limiter [:1] before the final product
         # tBodyAcc-ARCoeff-10            
         # tBodyAcc-ARCoeff-11            
         # tBodyAcc-ARCoeff-12
-        a=group['tAcc-Z'].apply(lambda x: list(x)).drop(columns='experimentID').reset_index(drop=True)
+        a=group['tBodyAcc-Z'].apply(lambda x: list(x)).drop(columns='experimentID').reset_index(drop=True)
         b=pd.DataFrame(a)
         # Change this std value for different sensitivities.
-        mask=((group['tAcc-Z'].std()>0.05) & (group['tAcc-Z'].count()>3))['tAcc-Z'].values.tolist()
+        mask=((True) & (group['tBodyAcc-Z'].count()>3))['tBodyAcc-Z'].values.tolist()
         b_valid = b[mask]
         c=b_valid[0].apply(lambda x: arburg(x,4))
         d = pd.DataFrame(c)
