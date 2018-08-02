@@ -4,6 +4,7 @@ import numpy as np
 import os
 import pandas as pd
 from scipy.stats import pearsonr
+from scipy.stats import entropy
 
 # This is the directory where your hz data files are located
 path = 'F:\\DS 6999\\project\\hzData\\*.csv'
@@ -106,9 +107,17 @@ for name in files[:1]: # Remove the limiter [:1] before the final product
         df_feature.append(group['tBodyAcc-X','tBodyAcc-Y','tBodyAcc-Z'].min().rename(columns={'tBodyAcc-X':'tBodyAcc-Min-1','tBodyAcc-Y':'tBodyAcc-Min-2','tBodyAcc-Z':'tBodyAcc-Min-3'}).drop(columns=['experimentID']))
 
         # tBodyAcc-SMA-1
-        """"""
-        """"""
-        """"""
+        # https://www.hindawi.com/journals/mpe/2015/790412/
+        x=group['tBodyAcc-X'].apply(lambda x:list(x)).reset_index(drop=True)
+        y=group['tBodyAcc-Y'].apply(lambda x:list(x)).reset_index(drop=True)
+        z=group['tBodyAcc-Z'].apply(lambda x:list(x)).reset_index(drop=True)
+        
+        x=pd.DataFrame(x.apply(lambda lst: [abs(x) for x in lst]).apply(lambda x: sum(x)))
+        y=pd.DataFrame(y.apply(lambda lst: [abs(x) for x in lst]).apply(lambda x: sum(x)))
+        z=pd.DataFrame(z.apply(lambda lst: [abs(x) for x in lst]).apply(lambda x: sum(x)))
+        
+        sma=(x+y+z).rename(columns={0:'tBodyAcc-SMA-1'})
+        df_feature.append(sma)
         
         # tBodyAcc-Energy-1
         # tBodyAcc-Energy-2              
@@ -125,11 +134,14 @@ for name in files[:1]: # Remove the limiter [:1] before the final product
         df_feature.append((a-b).rename(columns={'tBodyAcc-X':'tBodyAcc-IQR-1','tBodyAcc-Y':'tBodyAcc-IQR-2','tBodyAcc-Z':'tBodyAcc-IQR-3'}))
         
         # tBodyAcc-ropy-1                
-        # tBodyAcc-ropy-1                
-        # tBodyAcc-ropy-1   
-        """"""
-        """"""
-        """"""
+        # tBodyAcc-ropy-2
+        # tBodyAcc-ropy-3   
+        x=pd.DataFrame(group['tBodyAcc-X'].apply(entropy).reset_index(drop=True)).rename(columns={0:'tBodyAcc-ropy-1'})
+        y=pd.DataFrame(group['tBodyAcc-Y'].apply(entropy).reset_index(drop=True)).rename(columns={0:'tBodyAcc-ropy-2'})
+        z=pd.DataFrame(group['tBodyAcc-Z'].apply(entropy).reset_index(drop=True)).rename(columns={0:'tBodyAcc-ropy-3'})
+        df_feature.append(x)
+        df_feature.append(y)
+        df_feature.append(z)
 
         # tBodyAcc-ARCoeff-1             
         # tBodyAcc-ARCoeff-2             
@@ -230,9 +242,16 @@ for name in files[:1]: # Remove the limiter [:1] before the final product
         df_feature.append(group['tGravityAcc-X','tGravityAcc-Y','tGravityAcc-Z'].min().rename(columns={'tGravityAcc-X':'tGravityAcc-Min-1','tGravityAcc-Y':'tGravityAcc-Min-2','tGravityAcc-Z':'tGravityAcc-Min-3'}).drop(columns=['experimentID']))
         
         # tGravityAcc-SMA-1
-        """"""
-        """"""
-        """"""
+        x=group['tGravityAcc-X'].apply(lambda x:list(x)).reset_index(drop=True)
+        y=group['tGravityAcc-Y'].apply(lambda x:list(x)).reset_index(drop=True)
+        z=group['tGravityAcc-Z'].apply(lambda x:list(x)).reset_index(drop=True)
+        
+        x=pd.DataFrame(x.apply(lambda lst: [abs(x) for x in lst]).apply(lambda x: sum(x)))
+        y=pd.DataFrame(y.apply(lambda lst: [abs(x) for x in lst]).apply(lambda x: sum(x)))
+        z=pd.DataFrame(z.apply(lambda lst: [abs(x) for x in lst]).apply(lambda x: sum(x)))
+        
+        sma=(x+y+z).rename(columns={0:'tGravityAcc-SMA-1'})
+        df_feature.append(sma)
            
         # tGravityAcc-Energy-1           
         # tGravityAcc-Energy-2           
@@ -251,9 +270,12 @@ for name in files[:1]: # Remove the limiter [:1] before the final product
         # tGravityAcc-ropy-1             
         # tGravityAcc-ropy-1             
         # tGravityAcc-ropy-1
-        """"""
-        """"""
-        """"""
+        x=pd.DataFrame(group['tGravityAcc-X'].apply(entropy).reset_index(drop=True)).rename(columns={0:'tGravityAcc-ropy-1'})
+        y=pd.DataFrame(group['tGravityAcc-Y'].apply(entropy).reset_index(drop=True)).rename(columns={0:'tGravityAcc-ropy-2'})
+        z=pd.DataFrame(group['tGravityAcc-Z'].apply(entropy).reset_index(drop=True)).rename(columns={0:'tGravityAcc-ropy-3'})
+        df_feature.append(x)
+        df_feature.append(y)
+        df_feature.append(z)
              
         # tGravityAcc-ARCoeff-1          
         # tGravityAcc-ARCoeff-2          
@@ -395,9 +417,16 @@ for name in files[:1]: # Remove the limiter [:1] before the final product
         df_feature.append(group['tBodyGyro-X','tBodyGyro-Y','tBodyGyro-Z'].min().rename(columns={'tBodyGyro-X':'tBodyGyro-Min-1','tBodyGyro-Y':'tBodyGyro-Min-2','tBodyGyro-Z':'tBodyGyro-Min-3'}).drop(columns=['experimentID']))
         
         # tBodyGyro-SMA-1
-        """"""
-        """"""
-        """""" 
+        x=group['tBodyGyro-X'].apply(lambda x:list(x)).reset_index(drop=True)
+        y=group['tBodyGyro-Y'].apply(lambda x:list(x)).reset_index(drop=True)
+        z=group['tBodyGyro-Z'].apply(lambda x:list(x)).reset_index(drop=True)
+        
+        x=pd.DataFrame(x.apply(lambda lst: [abs(x) for x in lst]).apply(lambda x: sum(x)))
+        y=pd.DataFrame(y.apply(lambda lst: [abs(x) for x in lst]).apply(lambda x: sum(x)))
+        z=pd.DataFrame(z.apply(lambda lst: [abs(x) for x in lst]).apply(lambda x: sum(x)))
+        
+        sma=(x+y+z).rename(columns={0:'tBodyGyro-SMA-1'})
+        df_feature.append(sma)
         
         # tBodyGyro-Energy-1
         # tBodyGyro-Energy-2              
@@ -416,9 +445,12 @@ for name in files[:1]: # Remove the limiter [:1] before the final product
         # tBodyGyro-ropy-1                
         # tBodyGyro-ropy-1                
         # tBodyGyro-ropy-1   
-        """"""
-        """"""
-        """"""
+        x=pd.DataFrame(group['tBodyGyro-X'].apply(entropy).reset_index(drop=True)).rename(columns={0:'tBodyGyro-ropy-1'})
+        y=pd.DataFrame(group['tBodyGyro-Y'].apply(entropy).reset_index(drop=True)).rename(columns={0:'tBodyGyro-ropy-2'})
+        z=pd.DataFrame(group['tBodyGyro-Z'].apply(entropy).reset_index(drop=True)).rename(columns={0:'tBodyGyro-ropy-3'})
+        df_feature.append(x)
+        df_feature.append(y)
+        df_feature.append(z)
 
         # tBodyGyro-ARCoeff-1             
         # tBodyGyro-ARCoeff-2             
