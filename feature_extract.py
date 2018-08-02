@@ -1,10 +1,7 @@
+from burg import _arburg2
 import glob
 import os
 import pandas as pd
-from spectrum import arburg
-# On anaconda:
-# conda config --add channels conda-forge
-# conda install spectrum
 
 # This is the directory where your hz data files are located
 path = 'F:\\DS 6999\\project\\hzData\\*.csv'
@@ -108,6 +105,8 @@ for name in files[:1]: # Remove the limiter [:1] before the final product
 
         # tBodyAcc-SMA-1
         """"""
+        """"""
+        """"""
         
         # tBodyAcc-Energy-1
         # tBodyAcc-Energy-2              
@@ -127,23 +126,24 @@ for name in files[:1]: # Remove the limiter [:1] before the final product
         # tBodyAcc-ropy-1                
         # tBodyAcc-ropy-1   
         """"""
-        
+        """"""
+        """"""
+
         # tBodyAcc-ARCoeff-1             
         # tBodyAcc-ARCoeff-2             
         # tBodyAcc-ARCoeff-3             
         # tBodyAcc-ARCoeff-4    
         a=group['tBodyAcc-X'].apply(lambda x: list(x)).drop(columns='experimentID').reset_index(drop=True)
         b=pd.DataFrame(a)
-        # Change this std value for different sensitivities.
-        mask=((True) & (group['tBodyAcc-X'].count()>3))['tBodyAcc-X'].values.tolist()
+        mask=(group['tBodyAcc-X'].count()['tBodyAcc-X']>3).values.tolist()
         b_valid = b[mask]
-        c=b_valid[0].apply(lambda x: arburg(x,4))
+        c=b_valid[0].apply(lambda x: _arburg2(x,4))
         d = pd.DataFrame(c)
         e=d.apply(lambda x: [y[0] for y in list(x)])
-        df_feature.append(e.apply(lambda x: [y[0] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tBodyAcc-ARCoeff-1'}))
-        df_feature.append(e.apply(lambda x: [y[1] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tBodyAcc-ARCoeff-2'}))
-        df_feature.append(e.apply(lambda x: [y[2] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tBodyAcc-ARCoeff-3'}))
-        df_feature.append(e.apply(lambda x: [y[3] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tBodyAcc-ARCoeff-4'}))
+        df_feature.append(e.apply(lambda x: [y[1] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tBodyAcc-ARCoeff-1'}))
+        df_feature.append(e.apply(lambda x: [y[2] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tBodyAcc-ARCoeff-2'}))
+        df_feature.append(e.apply(lambda x: [y[3] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tBodyAcc-ARCoeff-3'}))
+        df_feature.append(e.apply(lambda x: [y[4] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tBodyAcc-ARCoeff-4'}))
         
         # tBodyAcc-ARCoeff-5             
         # tBodyAcc-ARCoeff-6             
@@ -151,16 +151,15 @@ for name in files[:1]: # Remove the limiter [:1] before the final product
         # tBodyAcc-ARCoeff-8
         a=group['tBodyAcc-Y'].apply(lambda x: list(x)).drop(columns='experimentID').reset_index(drop=True)
         b=pd.DataFrame(a)
-        # Change this std value for different sensitivities.
-        mask=((True) & (group['tBodyAcc-Y'].count()>3))['tBodyAcc-Y'].values.tolist()
+        mask=(group['tBodyAcc-Y'].count()['tBodyAcc-Y']>3).values.tolist()
         b_valid = b[mask]
-        c=b_valid[0].apply(lambda x: arburg(x,4))
+        c=b_valid[0].apply(lambda x: _arburg2(x,4))
         d = pd.DataFrame(c)
         e=d.apply(lambda x: [y[0] for y in list(x)])
-        df_feature.append(e.apply(lambda x: [y[0] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tBodyAcc-ARCoeff-5'}))
-        df_feature.append(e.apply(lambda x: [y[1] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tBodyAcc-ARCoeff-6'}))
-        df_feature.append(e.apply(lambda x: [y[2] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tBodyAcc-ARCoeff-7'}))
-        df_feature.append(e.apply(lambda x: [y[3] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tBodyAcc-ARCoeff-8'}))         
+        df_feature.append(e.apply(lambda x: [y[1] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tBodyAcc-ARCoeff-5'}))
+        df_feature.append(e.apply(lambda x: [y[2] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tBodyAcc-ARCoeff-6'}))
+        df_feature.append(e.apply(lambda x: [y[3] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tBodyAcc-ARCoeff-7'}))
+        df_feature.append(e.apply(lambda x: [y[4] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tBodyAcc-ARCoeff-8'}))        
 
         # tBodyAcc-ARCoeff-9             
         # tBodyAcc-ARCoeff-10            
@@ -168,62 +167,131 @@ for name in files[:1]: # Remove the limiter [:1] before the final product
         # tBodyAcc-ARCoeff-12
         a=group['tBodyAcc-Z'].apply(lambda x: list(x)).drop(columns='experimentID').reset_index(drop=True)
         b=pd.DataFrame(a)
-        # Change this std value for different sensitivities.
-        mask=((True) & (group['tBodyAcc-Z'].count()>3))['tBodyAcc-Z'].values.tolist()
+        mask=(group['tBodyAcc-Z'].count()['tBodyAcc-Z']>3).values.tolist()
         b_valid = b[mask]
-        c=b_valid[0].apply(lambda x: arburg(x,4))
+        c=b_valid[0].apply(lambda x: _arburg2(x,4))
         d = pd.DataFrame(c)
         e=d.apply(lambda x: [y[0] for y in list(x)])
-        df_feature.append(e.apply(lambda x: [y[0] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tBodyAcc-ARCoeff-9'}))
-        df_feature.append(e.apply(lambda x: [y[1] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tBodyAcc-ARCoeff-10'}))
-        df_feature.append(e.apply(lambda x: [y[2] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tBodyAcc-ARCoeff-11'}))
-        df_feature.append(e.apply(lambda x: [y[3] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tBodyAcc-ARCoeff-12'}))
+        df_feature.append(e.apply(lambda x: [y[1] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tBodyAcc-ARCoeff-9'}))
+        df_feature.append(e.apply(lambda x: [y[2] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tBodyAcc-ARCoeff-10'}))
+        df_feature.append(e.apply(lambda x: [y[3] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tBodyAcc-ARCoeff-11'}))
+        df_feature.append(e.apply(lambda x: [y[4] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tBodyAcc-ARCoeff-12'}))
         
         # tBodyAcc-Correlation-1         
         # tBodyAcc-Correlation-2         
-        # tBodyAcc-Correlation-3         
+        # tBodyAcc-Correlation-3
+        """"""
+        """"""
+        """"""
         
         print('Processing tGravityAcc')
+        
         # tGravityAcc-Mean-1             
         # tGravityAcc-Mean-2             
-        # tGravityAcc-Mean-3             
+        # tGravityAcc-Mean-3  
+        df_feature.append(group['tGravityAcc-X','tGravityAcc-Y','tGravityAcc-Z'].mean().rename(columns={'tGravityAcc-X':'tGravityAcc-Mean-1','tGravityAcc-Y':'tGravityAcc-Mean-2','tGravityAcc-Z':'tGravityAcc-Mean-3'}).drop(columns=['experimentID']))
+           
         # tGravityAcc-STD-1              
         # tGravityAcc-STD-2              
-        # tGravityAcc-STD-3              
+        # tGravityAcc-STD-3     
+        df_feature.append(group['tGravityAcc-X','tGravityAcc-Y','tGravityAcc-Z'].std().rename(columns={'tGravityAcc-X':'tGravityAcc-STD-1','tGravityAcc-Y':'tGravityAcc-STD-2','tGravityAcc-Z':'tGravityAcc-STD-3'}).drop(columns=['experimentID']))
+
+         
         # tGravityAcc-Mad-1              
         # tGravityAcc-Mad-2              
-        # tGravityAcc-Mad-3              
+        # tGravityAcc-Mad-3
+        df_feature.append(group['tGravityAcc-X','tGravityAcc-Y','tGravityAcc-Z'].mad().rename(columns={'tGravityAcc-X':'tGravityAcc-Mad-1','tGravityAcc-Y':'tGravityAcc-Mad-2','tGravityAcc-Z':'tGravityAcc-Mad-3'}).reset_index(drop=True))
+          
         # tGravityAcc-Max-1              
         # tGravityAcc-Max-2              
-        # tGravityAcc-Max-3              
+        # tGravityAcc-Max-3
+        df_feature.append(group['tGravityAcc-X','tGravityAcc-Y','tGravityAcc-Z'].max().rename(columns={'tGravityAcc-X':'tGravityAcc-Max-1','tGravityAcc-Y':'tGravityAcc-Max-2','tGravityAcc-Z':'tGravityAcc-Max-3'}).drop(columns=['experimentID']))
+            
         # tGravityAcc-Min-1              
         # tGravityAcc-Min-2              
-        # tGravityAcc-Min-3              
-        # tGravityAcc-SMA-1              
+        # tGravityAcc-Min-3
+        df_feature.append(group['tGravityAcc-X','tGravityAcc-Y','tGravityAcc-Z'].min().rename(columns={'tGravityAcc-X':'tGravityAcc-Min-1','tGravityAcc-Y':'tGravityAcc-Min-2','tGravityAcc-Z':'tGravityAcc-Min-3'}).drop(columns=['experimentID']))
+        
+        # tGravityAcc-SMA-1
+        """"""
+        """"""
+        """"""
+           
         # tGravityAcc-Energy-1           
         # tGravityAcc-Energy-2           
-        # tGravityAcc-Energy-3           
+        # tGravityAcc-Energy-3
+        a=group_square['tGravityAcc-X','tGravityAcc-Y','tGravityAcc-Z'].sum().drop(columns=['experimentID'])
+        b=group['tGravityAcc-X','tGravityAcc-Y','tGravityAcc-Z'].count().drop(columns=['experimentID'])
+        df_feature.append((a/b).rename(columns={'tGravityAcc-X':'tGravityAcc-Energy-1','tGravityAcc-Y':'tGravityAcc-Energy-2','tGravityAcc-Z':'tGravityAcc-Energy-3'}))
+          
         # tGravityAcc-IQR-1              
         # tGravityAcc-IQR-2              
-        # tGravityAcc-IQR-3              
+        # tGravityAcc-IQR-3
+        a=group['tGravityAcc-X','tGravityAcc-Y','tGravityAcc-Z'].quantile(0.75).reset_index(drop=True)
+        b=group['tGravityAcc-X','tGravityAcc-Y','tGravityAcc-Z'].quantile(0.25).reset_index(drop=True)
+        df_feature.append((a-b).rename(columns={'tGravityAcc-X':'tGravityAcc-IQR-1','tGravityAcc-Y':'tGravityAcc-IQR-2','tGravityAcc-Z':'tGravityAcc-IQR-3'}))
+    
         # tGravityAcc-ropy-1             
         # tGravityAcc-ropy-1             
-        # tGravityAcc-ropy-1             
+        # tGravityAcc-ropy-1
+        """"""
+        """"""
+        """"""
+             
         # tGravityAcc-ARCoeff-1          
         # tGravityAcc-ARCoeff-2          
         # tGravityAcc-ARCoeff-3          
-        # tGravityAcc-ARCoeff-4          
+        # tGravityAcc-ARCoeff-4 
+        a=group['tGravityAcc-X'].apply(lambda x: list(x)).drop(columns='experimentID').reset_index(drop=True)
+        b=pd.DataFrame(a)
+        mask=(group['tGravityAcc-X'].count()['tGravityAcc-X']>3).values.tolist()
+        b_valid = b[mask]
+        c=b_valid[0].apply(lambda x: _arburg2(x,4))
+        d = pd.DataFrame(c)
+        e=d.apply(lambda x: [y[0] for y in list(x)])
+        df_feature.append(e.apply(lambda x: [y[1] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tGravityAcc-ARCoeff-1'}))
+        df_feature.append(e.apply(lambda x: [y[2] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tGravityAcc-ARCoeff-2'}))
+        df_feature.append(e.apply(lambda x: [y[3] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tGravityAcc-ARCoeff-3'}))
+        df_feature.append(e.apply(lambda x: [y[4] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tGravityAcc-ARCoeff-4'}))
+         
         # tGravityAcc-ARCoeff-5          
         # tGravityAcc-ARCoeff-6          
         # tGravityAcc-ARCoeff-7          
-        # tGravityAcc-ARCoeff-8          
+        # tGravityAcc-ARCoeff-8  
+        a=group['tGravityAcc-Y'].apply(lambda x: list(x)).drop(columns='experimentID').reset_index(drop=True)
+        b=pd.DataFrame(a)
+        mask=(group['tGravityAcc-Y'].count()['tGravityAcc-Y']>3).values.tolist()
+        b_valid = b[mask]
+        c=b_valid[0].apply(lambda x: _arburg2(x,4))
+        d = pd.DataFrame(c)
+        e=d.apply(lambda x: [y[0] for y in list(x)])
+        df_feature.append(e.apply(lambda x: [y[1] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tGravityAcc-ARCoeff-5'}))
+        df_feature.append(e.apply(lambda x: [y[2] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tGravityAcc-ARCoeff-6'}))
+        df_feature.append(e.apply(lambda x: [y[3] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tGravityAcc-ARCoeff-7'}))
+        df_feature.append(e.apply(lambda x: [y[4] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tGravityAcc-ARCoeff-8'}))
+        
         # tGravityAcc-ARCoeff-9          
         # tGravityAcc-ARCoeff-10         
         # tGravityAcc-ARCoeff-11         
         # tGravityAcc-ARCoeff-12         
+        a=group['tGravityAcc-Z'].apply(lambda x: list(x)).drop(columns='experimentID').reset_index(drop=True)
+        b=pd.DataFrame(a)
+        mask=(group['tGravityAcc-Z'].count()['tGravityAcc-Z']>3).values.tolist()
+        b_valid = b[mask]
+        c=b_valid[0].apply(lambda x: _arburg2(x,4))
+        d = pd.DataFrame(c)
+        e=d.apply(lambda x: [y[0] for y in list(x)])
+        df_feature.append(e.apply(lambda x: [y[1] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tGravityAcc-ARCoeff-9'}))
+        df_feature.append(e.apply(lambda x: [y[2] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tGravityAcc-ARCoeff-10'}))
+        df_feature.append(e.apply(lambda x: [y[3] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tGravityAcc-ARCoeff-11'}))
+        df_feature.append(e.apply(lambda x: [y[4] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tGravityAcc-ARCoeff-12'}))
+        
         # tGravityAcc-Correlation-1      
         # tGravityAcc-Correlation-2      
-        # tGravityAcc-Correlation-3      
+        # tGravityAcc-Correlation-3
+        """"""
+        """"""
+        """"""
     
         print('Processing tBodyAccJerk')
         # tBodyAccJerk-Mean-1            
@@ -268,46 +336,112 @@ for name in files[:1]: # Remove the limiter [:1] before the final product
         # tBodyAccJerk-Correlation-3     
     
         print('Processing tBodyGyro')
-        # tBodyGyro-Mean-1               
-        # tBodyGyro-Mean-2               
-        # tBodyGyro-Mean-3               
-        # tBodyGyro-STD-1                
-        # tBodyGyro-STD-2                
-        # tBodyGyro-STD-3                
-        # tBodyGyro-Mad-1                
-        # tBodyGyro-Mad-2                
-        # tBodyGyro-Mad-3                
-        # tBodyGyro-Max-1                
-        # tBodyGyro-Max-2                
-        # tBodyGyro-Max-3                
-        # tBodyGyro-Min-1                
-        # tBodyGyro-Min-2                
-        # tBodyGyro-Min-3                
-        # tBodyGyro-SMA-1                
-        # tBodyGyro-Energy-1             
-        # tBodyGyro-Energy-2             
-        # tBodyGyro-Energy-3             
-        # tBodyGyro-IQR-1                
-        # tBodyGyro-IQR-2                
-        # tBodyGyro-IQR-3                
-        # tBodyGyro-ropy-1               
-        # tBodyGyro-ropy-1               
-        # tBodyGyro-ropy-1               
-        # tBodyGyro-ARCoeff-1            
-        # tBodyGyro-ARCoeff-2            
-        # tBodyGyro-ARCoeff-3            
-        # tBodyGyro-ARCoeff-4            
-        # tBodyGyro-ARCoeff-5            
-        # tBodyGyro-ARCoeff-6            
-        # tBodyGyro-ARCoeff-7            
-        # tBodyGyro-ARCoeff-8            
-        # tBodyGyro-ARCoeff-9            
-        # tBodyGyro-ARCoeff-10           
-        # tBodyGyro-ARCoeff-11           
-        # tBodyGyro-ARCoeff-12           
-        # tBodyGyro-Correlation-1        
-        # tBodyGyro-Correlation-2        
-        # tBodyGyro-Correlation-3        
+        
+        # tBodyGyro-Mean-1
+        # tBodyGyro-Mean-2                
+        # tBodyGyro-Mean-3
+        df_feature.append(group['tBodyGyro-X','tBodyGyro-Y','tBodyGyro-Z'].mean().rename(columns={'tBodyGyro-X':'tBodyGyro-Mean-1','tBodyGyro-Y':'tBodyGyro-Mean-2','tBodyGyro-Z':'tBodyGyro-Mean-3'}).drop(columns=['experimentID']))
+
+        # tBodyGyro-STD-1                 
+        # tBodyGyro-STD-2                 
+        # tBodyGyro-STD-3                 
+        df_feature.append(group['tBodyGyro-X','tBodyGyro-Y','tBodyGyro-Z'].std().rename(columns={'tBodyGyro-X':'tBodyGyro-STD-1','tBodyGyro-Y':'tBodyGyro-STD-2','tBodyGyro-Z':'tBodyGyro-STD-3'}).drop(columns=['experimentID']))
+          
+        # tBodyGyro-Mad-1
+        # tBodyGyro-Mad-2                 
+        # tBodyGyro-Mad-3                 
+        df_feature.append(group['tBodyGyro-X','tBodyGyro-Y','tBodyGyro-Z'].mad().rename(columns={'tBodyGyro-X':'tBodyGyro-Mad-1','tBodyGyro-Y':'tBodyGyro-Mad-2','tBodyGyro-Z':'tBodyGyro-Mad-3'}).reset_index(drop=True))
+
+        # tBodyGyro-Max-1
+        # tBodyGyro-Max-2                 
+        # tBodyGyro-Max-3                 
+        df_feature.append(group['tBodyGyro-X','tBodyGyro-Y','tBodyGyro-Z'].max().rename(columns={'tBodyGyro-X':'tBodyGyro-Max-1','tBodyGyro-Y':'tBodyGyro-Max-2','tBodyGyro-Z':'tBodyGyro-Max-3'}).drop(columns=['experimentID']))
+
+        # tBodyGyro-Min-1                 
+        # tBodyGyro-Min-2                 
+        # tBodyGyro-Min-3                 
+        df_feature.append(group['tBodyGyro-X','tBodyGyro-Y','tBodyGyro-Z'].min().rename(columns={'tBodyGyro-X':'tBodyGyro-Min-1','tBodyGyro-Y':'tBodyGyro-Min-2','tBodyGyro-Z':'tBodyGyro-Min-3'}).drop(columns=['experimentID']))
+        
+        # tBodyGyro-SMA-1
+        """"""
+        """"""
+        """""" 
+        
+        # tBodyGyro-Energy-1
+        # tBodyGyro-Energy-2              
+        # tBodyGyro-Energy-3
+        a=group_square['tBodyGyro-X','tBodyGyro-Y','tBodyGyro-Z'].sum().drop(columns=['experimentID'])
+        b=group['tBodyGyro-X','tBodyGyro-Y','tBodyGyro-Z'].count().drop(columns=['experimentID'])
+        df_feature.append((a/b).rename(columns={'tBodyGyro-X':'tBodyGyro-Energy-1','tBodyGyro-Y':'tBodyGyro-Energy-2','tBodyGyro-Z':'tBodyGyro-Energy-3'}))
+        
+        # tBodyGyro-IQR-1         
+        # tBodyGyro-IQR-2                 
+        # tBodyGyro-IQR-3      
+        a=group['tBodyGyro-X','tBodyGyro-Y','tBodyGyro-Z'].quantile(0.75).reset_index(drop=True)
+        b=group['tBodyGyro-X','tBodyGyro-Y','tBodyGyro-Z'].quantile(0.25).reset_index(drop=True)
+        df_feature.append((a-b).rename(columns={'tBodyGyro-X':'tBodyGyro-IQR-1','tBodyGyro-Y':'tBodyGyro-IQR-2','tBodyGyro-Z':'tBodyGyro-IQR-3'}))
+        
+        # tBodyGyro-ropy-1                
+        # tBodyGyro-ropy-1                
+        # tBodyGyro-ropy-1   
+        """"""
+        """"""
+        """"""
+
+        # tBodyGyro-ARCoeff-1             
+        # tBodyGyro-ARCoeff-2             
+        # tBodyGyro-ARCoeff-3             
+        # tBodyGyro-ARCoeff-4    
+        a=group['tBodyGyro-X'].apply(lambda x: list(x)).drop(columns='experimentID').reset_index(drop=True)
+        b=pd.DataFrame(a)
+        mask=(group['tBodyGyro-X'].count()['tBodyGyro-X']>3).values.tolist()
+        b_valid = b[mask]
+        c=b_valid[0].apply(lambda x: _arburg2(x,4))
+        d = pd.DataFrame(c)
+        e=d.apply(lambda x: [y[0] for y in list(x)])
+        df_feature.append(e.apply(lambda x: [y[1] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tBodyGyro-ARCoeff-1'}))
+        df_feature.append(e.apply(lambda x: [y[2] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tBodyGyro-ARCoeff-2'}))
+        df_feature.append(e.apply(lambda x: [y[3] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tBodyGyro-ARCoeff-3'}))
+        df_feature.append(e.apply(lambda x: [y[4] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tBodyGyro-ARCoeff-4'}))
+        
+        # tBodyGyro-ARCoeff-5             
+        # tBodyGyro-ARCoeff-6             
+        # tBodyGyro-ARCoeff-7             
+        # tBodyGyro-ARCoeff-8
+        a=group['tBodyGyro-Y'].apply(lambda x: list(x)).drop(columns='experimentID').reset_index(drop=True)
+        b=pd.DataFrame(a)
+        mask=(group['tBodyGyro-Y'].count()['tBodyGyro-Y']>3).values.tolist()
+        b_valid = b[mask]
+        c=b_valid[0].apply(lambda x: _arburg2(x,4))
+        d = pd.DataFrame(c)
+        e=d.apply(lambda x: [y[0] for y in list(x)])
+        df_feature.append(e.apply(lambda x: [y[1] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tBodyGyro-ARCoeff-5'}))
+        df_feature.append(e.apply(lambda x: [y[2] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tBodyGyro-ARCoeff-6'}))
+        df_feature.append(e.apply(lambda x: [y[3] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tBodyGyro-ARCoeff-7'}))
+        df_feature.append(e.apply(lambda x: [y[4] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tBodyGyro-ARCoeff-8'}))        
+
+        # tBodyGyro-ARCoeff-9             
+        # tBodyGyro-ARCoeff-10            
+        # tBodyGyro-ARCoeff-11            
+        # tBodyGyro-ARCoeff-12
+        a=group['tBodyGyro-Z'].apply(lambda x: list(x)).drop(columns='experimentID').reset_index(drop=True)
+        b=pd.DataFrame(a)
+        mask=(group['tBodyGyro-Z'].count()['tBodyGyro-Z']>3).values.tolist()
+        b_valid = b[mask]
+        c=b_valid[0].apply(lambda x: _arburg2(x,4))
+        d = pd.DataFrame(c)
+        e=d.apply(lambda x: [y[0] for y in list(x)])
+        df_feature.append(e.apply(lambda x: [y[1] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tBodyGyro-ARCoeff-9'}))
+        df_feature.append(e.apply(lambda x: [y[2] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tBodyGyro-ARCoeff-10'}))
+        df_feature.append(e.apply(lambda x: [y[3] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tBodyGyro-ARCoeff-11'}))
+        df_feature.append(e.apply(lambda x: [y[4] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tBodyGyro-ARCoeff-12'}))
+        
+        # tBodyGyro-Correlation-1         
+        # tBodyGyro-Correlation-2         
+        # tBodyGyro-Correlation-3
+        """"""
+        """"""
+        """"""      
     
         print('Processing tBodyGyroJerk')
         # tBodyGyroJerk-Mean-1           
@@ -426,6 +560,7 @@ for name in files[:1]: # Remove the limiter [:1] before the final product
         # tBodyGyroJerkMag-ARCoeff-3     
         # tBodyGyroJerkMag-ARCoeff-4
         
+        print('Processing f-transformed')
         # fBodyAcc-Mean-1                
         # fBodyAcc-Mean-2                
         # fBodyAcc-Mean-3                
