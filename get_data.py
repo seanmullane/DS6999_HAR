@@ -2,7 +2,6 @@ import glob
 import os
 import pandas as pd
 import scipy
-from scipy import signal
 
 # This is the directory where your raw data files are located
 path = 'F:\DS 6999\data\HAPT\RawData\*.txt'
@@ -74,8 +73,8 @@ def get_data():
         # Iterate through each of the frequencies, aka downsampling
         for hz in [5,10,25,50]:
             # Downsample by observing every n-th entry based on the ratio
-            butter_filt = scipy.signal.butter(3, 20/(50/2), analog=True)
-            butter_filt_2 = scipy.signal.butter(3, 0.3/(50/2), analog=True)
+            butter_filt = scipy.signal.butter(3, 20/(50/2))
+            butter_filt_2 = scipy.signal.butter(3, 0.3/(50/2))
             if hz==50:
                 df2 = df.reset_index(drop=True)
                 df_filt=df[[0,1,2]].apply(scipy.signal.medfilt)
@@ -86,6 +85,9 @@ def get_data():
                     df_out['tGravityAcc-X'] = df_g[0]
                     df_out['tGravityAcc-Y'] = df_g[1]
                     df_out['tGravityAcc-Z'] = df_g[2]
+                    df_out[0] = df_out[0]-df_g[0]
+                    df_out[1] = df_out[1]-df_g[1]
+                    df_out[2] = df_out[2]-df_g[2]
                     df_out = df_out.rename(columns={0:'tBodyAcc-X',1:'tBodyAcc-Y',2:'tBodyAcc-Z'})
                     acc_hz_50 = acc_hz_50.append(df_out)
                 else:
@@ -101,6 +103,9 @@ def get_data():
                     df_out['tGravityAcc-X'] = df_g[0]
                     df_out['tGravityAcc-Y'] = df_g[1]
                     df_out['tGravityAcc-Z'] = df_g[2]
+                    df_out[0] = df_out[0]-df_g[0]
+                    df_out[1] = df_out[1]-df_g[1]
+                    df_out[2] = df_out[2]-df_g[2]
                     df_out = df_out.rename(columns={0:'tBodyAcc-X',1:'tBodyAcc-Y',2:'tBodyAcc-Z'})
                     acc_hz_25 = acc_hz_25.append(df_out)
                 else:
@@ -116,6 +121,9 @@ def get_data():
                     df_out['tGravityAcc-X'] = df_g[0]
                     df_out['tGravityAcc-Y'] = df_g[1]
                     df_out['tGravityAcc-Z'] = df_g[2]
+                    df_out[0] = df_out[0]-df_g[0]
+                    df_out[1] = df_out[1]-df_g[1]
+                    df_out[2] = df_out[2]-df_g[2]
                     df_out = df_out.rename(columns={0:'tBodyAcc-X',1:'tBodyAcc-Y',2:'tBodyAcc-Z'})
                     acc_hz_10 = acc_hz_10.append(df_out)
                 else:
@@ -131,6 +139,9 @@ def get_data():
                     df_out['tGravityAcc-X'] = df_g[0]
                     df_out['tGravityAcc-Y'] = df_g[1]
                     df_out['tGravityAcc-Z'] = df_g[2]
+                    df_out[0] = df_out[0]-df_g[0]
+                    df_out[1] = df_out[1]-df_g[1]
+                    df_out[2] = df_out[2]-df_g[2]
                     df_out = df_out.rename(columns={0:'tBodyAcc-X',1:'tBodyAcc-Y',2:'tBodyAcc-Z'})
                     acc_hz_5 = acc_hz_5.append(df_out)
                 else:
