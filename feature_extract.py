@@ -1,5 +1,6 @@
 from burg import _arburg2
 import glob
+from astropy.stats import median_absolute_deviation
 import numpy as np
 import os
 import pandas as pd
@@ -12,6 +13,16 @@ files = glob.glob(path)
 
 # This is the directory where you want to write the new csvs to
 os.chdir('F:\\DS 6999\\project\\FeatureData')
+
+# https://stackoverflow.com/questions/8930370/where-can-i-find-mad-mean-absolute-deviation-in-scipy
+def mad2(arr):
+    """ Median Absolute Deviation: a "Robust" version of standard deviation.
+        Indices variabililty of the sample.
+        https://en.wikipedia.org/wiki/Median_absolute_deviation 
+    """
+    arr = np.ma.array(arr).compressed() # should be faster to not use masked arrays.
+    med = np.median(arr)
+    return np.median(np.abs(arr - med))
 
 # Ignore this for now, when the program is complete this will be in use
 # =============================================================================
@@ -94,8 +105,10 @@ for name in files[:1]: # Remove the limiter [:1] before the final product
         # tBodyAcc-Mad-1
         # tBodyAcc-Mad-2                 
         # tBodyAcc-Mad-3                 
-        df_feature.append(group['tBodyAcc-X','tBodyAcc-Y','tBodyAcc-Z'].mad().rename(columns={'tBodyAcc-X':'tBodyAcc-Mad-1','tBodyAcc-Y':'tBodyAcc-Mad-2','tBodyAcc-Z':'tBodyAcc-Mad-3'}).reset_index(drop=True))
-
+        df_feature.append(pd.DataFrame(group['tBodyAcc-X'].apply(lambda x: median_absolute_deviation(x)).rename(columns={'tBodyAcc-X':'tBodyAcc-Mad-1'}).reset_index(drop=True)).rename(columns={0:'tBodyAcc-Mad-1'}))
+        df_feature.append(pd.DataFrame(group['tBodyAcc-Y'].apply(lambda x: median_absolute_deviation(x)).rename(columns={'tBodyAcc-Y':'tBodyAcc-Mad-2'}).reset_index(drop=True)).rename(columns={0:'tBodyAcc-Mad-2'}))
+        df_feature.append(pd.DataFrame(group['tBodyAcc-Z'].apply(lambda x: median_absolute_deviation(x)).rename(columns={'tBodyAcc-Z':'tBodyAcc-Mad-2'}).reset_index(drop=True)).rename(columns={0:'tBodyAcc-Mad-3'}))
+                
         # tBodyAcc-Max-1
         # tBodyAcc-Max-2                 
         # tBodyAcc-Max-3                 
@@ -229,7 +242,9 @@ for name in files[:1]: # Remove the limiter [:1] before the final product
         # tGravityAcc-Mad-1              
         # tGravityAcc-Mad-2              
         # tGravityAcc-Mad-3
-        df_feature.append(group['tGravityAcc-X','tGravityAcc-Y','tGravityAcc-Z'].mad().rename(columns={'tGravityAcc-X':'tGravityAcc-Mad-1','tGravityAcc-Y':'tGravityAcc-Mad-2','tGravityAcc-Z':'tGravityAcc-Mad-3'}).reset_index(drop=True))
+        df_feature.append(pd.DataFrame(group['tGravityAcc-X'].apply(lambda x: median_absolute_deviation(x)).rename(columns={'tGravityAcc-X':'tGravityAcc-Mad-1'}).reset_index(drop=True)).rename(columns={0:'tGravityAcc-Mad-1'}))
+        df_feature.append(pd.DataFrame(group['tGravityAcc-Y'].apply(lambda x: median_absolute_deviation(x)).rename(columns={'tGravityAcc-Y':'tGravityAcc-Mad-2'}).reset_index(drop=True)).rename(columns={0:'tGravityAcc-Mad-2'}))
+        df_feature.append(pd.DataFrame(group['tGravityAcc-Z'].apply(lambda x: median_absolute_deviation(x)).rename(columns={'tGravityAcc-Z':'tGravityAcc-Mad-2'}).reset_index(drop=True)).rename(columns={0:'tGravityAcc-Mad-3'}))
           
         # tGravityAcc-Max-1              
         # tGravityAcc-Max-2              
@@ -346,23 +361,48 @@ for name in files[:1]: # Remove the limiter [:1] before the final product
         xy.columns = ['x','y']
         xy=xy.apply(lambda row: pearsonr(row['x'],row['y']), axis=1)
         df_feature.append(pd.DataFrame(xy.apply(lambda x: x[0])).rename(columns={0:'tGravityAcc-Correlation-3'}))
-    
+
         print('Processing tBodyAccJerk')
-        # tBodyAccJerk-Mean-1            
+        
+        tBodyAccJerkX = pd.DataFrame(group['tBodyAcc-X'].apply(lambda x: list(x)).apply(lambda row: np.diff(row)/(1/hz)).reset_index(drop=True)).rename(columns={0:'tBodyAccJerk-X'})
+        tBodyAccJerkY = pd.DataFrame(group['tBodyAcc-Y'].apply(lambda x: list(x)).apply(lambda row: np.diff(row)/(1/hz)).reset_index(drop=True)).rename(columns={0:'tBodyAccJerk-Y'})
+        tBodyAccJerkZ = pd.DataFrame(group['tBodyAcc-Z'].apply(lambda x: list(x)).apply(lambda row: np.diff(row)/(1/hz)).reset_index(drop=True)).rename(columns={0:'tBodyAccJerk-Z'})
+        
+        # tBodyAccJerk-Mean-1       
         # tBodyAccJerk-Mean-2            
-        # tBodyAccJerk-Mean-3            
-        # tBodyAccJerk-STD-1             
-        # tBodyAccJerk-STD-2             
-        # tBodyAccJerk-STD-3             
-        # tBodyAccJerk-Mad-1             
-        # tBodyAccJerk-Mad-2             
-        # tBodyAccJerk-Mad-3             
-        # tBodyAccJerk-Max-1             
-        # tBodyAccJerk-Max-2             
-        # tBodyAccJerk-Max-3             
-        # tBodyAccJerk-Min-1             
-        # tBodyAccJerk-Min-2             
-        # tBodyAccJerk-Min-3             
+        # tBodyAccJerk-Mean-3
+        df_feature.append(tBodyAccJerkX.apply(lambda row: [np.mean(y) for y in row]).rename(columns={0:'tBodyAccJerk-Mean-1'}))
+        df_feature.append(tBodyAccJerkY.apply(lambda row: [np.mean(y) for y in row]).rename(columns={0:'tBodyAccJerk-Mean-2'}))
+        df_feature.append(tBodyAccJerkZ.apply(lambda row: [np.mean(y) for y in row]).rename(columns={0:'tBodyAccJerk-Mean-3'}))
+    
+        # tBodyAccJerk-STD-1                 
+        # tBodyAccJerk-STD-2                 
+        # tBodyAccJerk-STD-3                 
+        df_feature.append(tBodyAccJerkX.apply(lambda row: [np.std(y) for y in row]).rename(columns={0:'tBodyAccJerk-STD-1'}))
+        df_feature.append(tBodyAccJerkY.apply(lambda row: [np.std(y) for y in row]).rename(columns={0:'tBodyAccJerk-STD-2'}))
+        df_feature.append(tBodyAccJerkZ.apply(lambda row: [np.std(y) for y in row]).rename(columns={0:'tBodyAccJerk-STD-3'}))
+          
+        # tBodyAccJerk-Mad-1
+        # tBodyAccJerk-Mad-2                 
+        # tBodyAccJerk-Mad-3
+        df_feature.append(tBodyAccJerkX.apply(lambda row: [mad2(y) for y in row]).rename(columns={'tBodyAccJerk-X':'tBodyAccJerk-Mad-1'}))
+        df_feature.append(tBodyAccJerkY.apply(lambda row: [mad2(y) for y in row]).rename(columns={'tBodyAccJerk-Y':'tBodyAccJerk-Mad-2'}))
+        df_feature.append(tBodyAccJerkZ.apply(lambda row: [mad2(y) for y in row]).rename(columns={'tBodyAccJerk-Z':'tBodyAccJerk-Mad-3'}))
+              
+        # tBodyAccJerk-Max-1
+        # tBodyAccJerk-Max-2                 
+        # tBodyAccJerk-Max-3
+        df_feature.append(tBodyAccJerkX.apply(lambda x: [np.sort(y)[-1:].sum() for y in x]).rename(columns={0:'tBodyJerk-Max-1'}))
+        df_feature.append(tBodyAccJerkY.apply(lambda x: [np.sort(y)[-1:].sum() for y in x]).rename(columns={0:'tBodyJerk-Max-2'}))
+        df_feature.append(tBodyAccJerkZ.apply(lambda x: [np.sort(y)[-1:].sum() for y in x]).rename(columns={0:'tBodyJerk-Max-3'}))
+        
+        # tBodyAccJerk-Min-1                 
+        # tBodyAccJerk-Min-2                 
+        # tBodyAccJerk-Min-3                 
+        df_feature.append(tBodyAccJerkX.apply(lambda x: [np.sort(y)[:1].sum() for y in x]).rename(columns={0:'tBodyJerk-Mix-1'}))
+        df_feature.append(tBodyAccJerkY.apply(lambda x: [np.sort(y)[:1].sum() for y in x]).rename(columns={0:'tBodyJerk-Mix-2'}))
+        df_feature.append(tBodyAccJerkZ.apply(lambda x: [np.sort(y)[:1].sum() for y in x]).rename(columns={0:'tBodyJerk-Mix-3'}))
+
         # tBodyAccJerk-SMA-1             
         # tBodyAccJerk-Energy-1          
         # tBodyAccJerk-Energy-2          
@@ -404,7 +444,9 @@ for name in files[:1]: # Remove the limiter [:1] before the final product
         # tBodyGyro-Mad-1
         # tBodyGyro-Mad-2                 
         # tBodyGyro-Mad-3                 
-        df_feature.append(group['tBodyGyro-X','tBodyGyro-Y','tBodyGyro-Z'].mad().rename(columns={'tBodyGyro-X':'tBodyGyro-Mad-1','tBodyGyro-Y':'tBodyGyro-Mad-2','tBodyGyro-Z':'tBodyGyro-Mad-3'}).reset_index(drop=True))
+        df_feature.append(pd.DataFrame(group['tBodyGyro-X'].apply(lambda x: median_absolute_deviation(x)).rename(columns={'tBodyGyro-X':'tBodyGyro-Mad-1'}).reset_index(drop=True)).rename(columns={0:'tBodyGyro-Mad-1'}))
+        df_feature.append(pd.DataFrame(group['tBodyGyro-Y'].apply(lambda x: median_absolute_deviation(x)).rename(columns={'tBodyGyro-Y':'tBodyGyro-Mad-2'}).reset_index(drop=True)).rename(columns={0:'tBodyGyro-Mad-2'}))
+        df_feature.append(pd.DataFrame(group['tBodyGyro-Z'].apply(lambda x: median_absolute_deviation(x)).rename(columns={'tBodyGyro-Z':'tBodyGyro-Mad-2'}).reset_index(drop=True)).rename(columns={0:'tBodyGyro-Mad-3'}))
 
         # tBodyGyro-Max-1
         # tBodyGyro-Max-2                 
