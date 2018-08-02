@@ -1,7 +1,9 @@
 from burg import _arburg2
 import glob
+import numpy as np
 import os
 import pandas as pd
+from scipy.stats import pearsonr
 
 # This is the directory where your hz data files are located
 path = 'F:\\DS 6999\\project\\hzData\\*.csv'
@@ -180,9 +182,24 @@ for name in files[:1]: # Remove the limiter [:1] before the final product
         # tBodyAcc-Correlation-1         
         # tBodyAcc-Correlation-2         
         # tBodyAcc-Correlation-3
-        """"""
-        """"""
-        """"""
+        x=pd.DataFrame(group['tBodyAcc-X'].apply(lambda x:list(x))).reset_index(drop=True)
+        y=pd.DataFrame(group['tBodyAcc-Y'].apply(lambda x:list(x))).reset_index(drop=True)
+        z=pd.DataFrame(group['tBodyAcc-Z'].apply(lambda x:list(x))).reset_index(drop=True)
+        
+        yz=pd.concat([y,z],axis=1)
+        yz.columns = ['y','z']
+        yz=yz.apply(lambda row: pearsonr(row['y'],row['z']), axis=1)
+        df_feature.append(pd.DataFrame(yz.apply(lambda x: x[0])).rename(columns={0:'tBodyAcc-Correlation-1'}))
+        
+        xz=pd.concat([x,z],axis=1)
+        xz.columns = ['x','z']
+        xz=xz.apply(lambda row: pearsonr(row['x'],row['z']), axis=1)
+        df_feature.append(pd.DataFrame(xz.apply(lambda x: x[0])).rename(columns={0:'tBodyAcc-Correlation-2'}))
+
+        xy=pd.concat([x,y],axis=1)
+        xy.columns = ['x','y']
+        xy=xy.apply(lambda row: pearsonr(row['x'],row['y']), axis=1)
+        df_feature.append(pd.DataFrame(xy.apply(lambda x: x[0])).rename(columns={0:'tBodyAcc-Correlation-3'}))
         
         print('Processing tGravityAcc')
         
@@ -289,9 +306,24 @@ for name in files[:1]: # Remove the limiter [:1] before the final product
         # tGravityAcc-Correlation-1      
         # tGravityAcc-Correlation-2      
         # tGravityAcc-Correlation-3
-        """"""
-        """"""
-        """"""
+        x=pd.DataFrame(group['tGravityAcc-X'].apply(lambda x:list(x))).reset_index(drop=True)
+        y=pd.DataFrame(group['tGravityAcc-Y'].apply(lambda x:list(x))).reset_index(drop=True)
+        z=pd.DataFrame(group['tGravityAcc-Z'].apply(lambda x:list(x))).reset_index(drop=True)
+        
+        yz=pd.concat([y,z],axis=1)
+        yz.columns = ['y','z']
+        yz=yz.apply(lambda row: pearsonr(row['y'],row['z']), axis=1)
+        df_feature.append(pd.DataFrame(yz.apply(lambda x: x[0])).rename(columns={0:'tGravityAcc-Correlation-1'}))
+        
+        xz=pd.concat([x,z],axis=1)
+        xz.columns = ['x','z']
+        xz=xz.apply(lambda row: pearsonr(row['x'],row['z']), axis=1)
+        df_feature.append(pd.DataFrame(xz.apply(lambda x: x[0])).rename(columns={0:'tGravityAcc-Correlation-2'}))
+
+        xy=pd.concat([x,y],axis=1)
+        xy.columns = ['x','y']
+        xy=xy.apply(lambda row: pearsonr(row['x'],row['y']), axis=1)
+        df_feature.append(pd.DataFrame(xy.apply(lambda x: x[0])).rename(columns={0:'tGravityAcc-Correlation-3'}))
     
         print('Processing tBodyAccJerk')
         # tBodyAccJerk-Mean-1            
@@ -439,9 +471,24 @@ for name in files[:1]: # Remove the limiter [:1] before the final product
         # tBodyGyro-Correlation-1         
         # tBodyGyro-Correlation-2         
         # tBodyGyro-Correlation-3
-        """"""
-        """"""
-        """"""      
+        x=pd.DataFrame(group['tBodyGyro-X'].apply(lambda x:list(x))).reset_index(drop=True)
+        y=pd.DataFrame(group['tBodyGyro-Y'].apply(lambda x:list(x))).reset_index(drop=True)
+        z=pd.DataFrame(group['tBodyGyro-Z'].apply(lambda x:list(x))).reset_index(drop=True)
+        
+        yz=pd.concat([y,z],axis=1)
+        yz.columns = ['y','z']
+        yz=yz.apply(lambda row: pearsonr(row['y'],row['z']), axis=1)
+        df_feature.append(pd.DataFrame(yz.apply(lambda x: x[0])).rename(columns={0:'tBodyGyro-Correlation-1'}))
+        
+        xz=pd.concat([x,z],axis=1)
+        xz.columns = ['x','z']
+        xz=xz.apply(lambda row: pearsonr(row['x'],row['z']), axis=1)
+        df_feature.append(pd.DataFrame(xz.apply(lambda x: x[0])).rename(columns={0:'tBodyGyro-Correlation-2'}))
+
+        xy=pd.concat([x,y],axis=1)
+        xy.columns = ['x','y']
+        xy=xy.apply(lambda row: pearsonr(row['x'],row['y']), axis=1)
+        df_feature.append(pd.DataFrame(xy.apply(lambda x: x[0])).rename(columns={0:'tBodyGyro-Correlation-3'}))      
     
         print('Processing tBodyGyroJerk')
         # tBodyGyroJerk-Mean-1           
