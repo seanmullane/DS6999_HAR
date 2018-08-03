@@ -53,7 +53,15 @@ for name in files[:1]: # Remove the limiter [:1] before the final product
     df=pd.DataFrame.from_csv(name, sep='\t')
     df_out = df
     df_out=df_out.reset_index()
+    
+    df_body_acc_mag = np.sqrt(np.square(df[['tBodyAcc-X','tBodyAcc-Y','tBodyAcc-Z']]).sum(axis=1)).reset_index(drop=True).rename(columns={0:'tBodyAccMag'})
+    df_gravity_acc_mag = np.sqrt(np.square(df[['tGravityAcc-X','tGravityAcc-Y','tGravityAcc-Z']]).sum(axis=1)).reset_index(drop=True).rename(columns={0:'tGravityAccMag'})
+    df_body_gyro_mag = np.sqrt(np.square(df[['tBodyGyro-X','tBodyGyro-Y','tBodyGyro-Z']]).sum(axis=1)).reset_index(drop=True).rename(columns={0:'tBodyGyroMag'})
 
+    df_out['tBodyAccMag'] = df_body_acc_mag
+    df_out['tGravityAccMag'] = df_gravity_acc_mag
+    df_out['tBodyGyroMag'] = df_body_gyro_mag
+    
     # This creates a new index between groups (of experiment ID's)
     # For example, if the first few entries of the data looked something
     # like (experiment ID's): 1 1 1 1 1 2 2 2 3 ....
@@ -61,7 +69,7 @@ for name in files[:1]: # Remove the limiter [:1] before the final product
     # 0 1 2 3 4 0 1 2 0 ...
     sub_index = df_out.groupby(['experimentID']).cumcount()
     df_out['index'] = sub_index
-    
+
     for seconds in [1]:
 #   for seconds in [1,2,3,5,10]: In the final product use this!
         
@@ -795,36 +803,112 @@ for name in files[:1]: # Remove the limiter [:1] before the final product
         xy=xy.apply(lambda row: pearsonr(row['x'],row['y']), axis=1)
         df_feature.append(pd.DataFrame(xy.apply(lambda x: x[0])).rename(columns={0:'tBodyGyroJerk-Correlation-3'}))
 
-        print('Processing tBodyAccMag')
-        # tBodyAccMag-Mean-1             
+        print('Processing tBodyAccMag')        
+
+        # tBodyAccMag-Mean-1        
+        df_feature.append(group['tBodyAccMag'].mean().rename(columns={'tBodyAccMag':'tBodyAccMag-Mean-1'}).drop(columns=['experimentID']))
+        
         # tBodyAccMag-STD-1              
+        df_feature.append(group['tBodyAccMag'].std().rename(columns={'tBodyAccMag':'tBodyAccMag-STD-1'}).drop(columns=['experimentID']))
+
         # tBodyAccMag-Mad-1              
+        df_feature.append(pd.DataFrame(group['tBodyAccMag'].apply(lambda x: median_absolute_deviation(x)).rename(columns={'tBodyAcc':'tBodyAccMag-Mad-1'}).reset_index(drop=True)).rename(columns={0:'tBodyAccMag-Mad-1'}))
+
         # tBodyAccMag-Max-1              
+        df_feature.append(group['tBodyAccMag'].max().rename(columns={'tBodyAccMag':'tBodyAccMag-Max-1'}).drop(columns=['experimentID']))
+
         # tBodyAccMag-Min-1              
+        df_feature.append(group['tBodyAccMag'].min().rename(columns={'tBodyAccMag':'tBodyAccMag-Min-1'}).drop(columns=['experimentID']))
+
         # tBodyAccMag-SMA-1              
-        # tBodyAccMag-Energy-1           
+        x=group['tBodyAccMag'].apply(lambda x:list(x)).reset_index(drop=True)
+        x=pd.DataFrame(x.apply(lambda lst: [abs(x) for x in lst]).apply(lambda x: sum(x)))
+        sma=(x).rename(columns={0:'tBodyAccMag-SMA-1'})
+        df_feature.append(sma)
+   
+        # tBodyAccMag-Energy-1
+        a=group_square['tBodyAccMag'].sum().drop(columns=['experimentID'])
+        b=group['tBodyAccMag'].count().drop(columns=['experimentID'])
+        df_feature.append((a/b).rename(columns={'tBodyAccMag':'tBodyAccMag-Energy-1'}))
+
         # tBodyAccMag-IQR-1              
-        # tBodyAccMag-ropy-1             
+        a=group['tBodyAccMag'].quantile(0.75).reset_index(drop=True)
+        b=group['tBodyAccMag'].quantile(0.25).reset_index(drop=True)
+        df_feature.append(pd.DataFrame((a-b)).rename(columns={0:'tBodyAccMag-IQR-1'}))
+
+        # tBodyAccMag-ropy-1      
+        x=pd.DataFrame(group['tBodyAccMag'].apply(entropy).reset_index(drop=True)).rename(columns={0:'tBodyAccMag-ropy-1'})
+        df_feature.append(x)
+      
         # tBodyAccMag-ARCoeff-1          
         # tBodyAccMag-ARCoeff-2          
         # tBodyAccMag-ARCoeff-3          
         # tBodyAccMag-ARCoeff-4     
+        a=group['tBodyAccMag'].apply(lambda x: list(x)).drop(columns='experimentID').reset_index(drop=True)
+        b=pd.DataFrame(a)
+        mask=(group['tBodyAccMag'].count()['tBodyAccMag']>3).values.tolist()
+        b_valid = b[mask]
+        c=b_valid[0].apply(lambda x: _arburg2(x,4))
+        d = pd.DataFrame(c)
+        e=d.apply(lambda x: [y[0] for y in list(x)])
+        df_feature.append(e.apply(lambda x: [y[1] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tBodyAccMag-ARCoeff-1'}))
+        df_feature.append(e.apply(lambda x: [y[2] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tBodyAccMag-ARCoeff-2'}))
+        df_feature.append(e.apply(lambda x: [y[3] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tBodyAccMag-ARCoeff-3'}))
+        df_feature.append(e.apply(lambda x: [y[4] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tBodyAccMag-ARCoeff-4'}))
         
         print('Processing tGravityAccMag')
-        # tGravityAccMag-Mean-1          
-        # tGravityAccMag-STD-1           
-        # tGravityAccMag-Mad-1           
-        # tGravityAccMag-Max-1           
-        # tGravityAccMag-Min-1           
-        # tGravityAccMag-SMA-1           
-        # tGravityAccMag-Energy-1        
-        # tGravityAccMag-IQR-1           
-        # tGravityAccMag-ropy-1          
-        # tGravityAccMag-ARCoeff-1       
-        # tGravityAccMag-ARCoeff-2       
-        # tGravityAccMag-ARCoeff-3       
-        # tGravityAccMag-ARCoeff-4
-    
+        
+        # tGravityAccMag-Mean-1        
+        df_feature.append(group['tGravityAccMag'].mean().rename(columns={'tGravityAccMag':'tGravityAccMag-Mean-1'}).drop(columns=['experimentID']))
+        
+        # tGravityAccMag-STD-1              
+        df_feature.append(group['tGravityAccMag'].std().rename(columns={'tGravityAccMag':'tGravityAccMag-STD-1'}).drop(columns=['experimentID']))
+
+        # tGravityAccMag-Mad-1              
+        df_feature.append(pd.DataFrame(group['tGravityAccMag'].apply(lambda x: median_absolute_deviation(x)).rename(columns={'tBodyAcc':'tGravityAccMag-Mad-1'}).reset_index(drop=True)).rename(columns={0:'tGravityAccMag-Mad-1'}))
+
+        # tGravityAccMag-Max-1              
+        df_feature.append(group['tGravityAccMag'].max().rename(columns={'tGravityAccMag':'tGravityAccMag-Max-1'}).drop(columns=['experimentID']))
+
+        # tGravityAccMag-Min-1              
+        df_feature.append(group['tGravityAccMag'].min().rename(columns={'tGravityAccMag':'tGravityAccMag-Min-1'}).drop(columns=['experimentID']))
+
+        # tGravityAccMag-SMA-1              
+        x=group['tGravityAccMag'].apply(lambda x:list(x)).reset_index(drop=True)
+        x=pd.DataFrame(x.apply(lambda lst: [abs(x) for x in lst]).apply(lambda x: sum(x)))
+        sma=(x).rename(columns={0:'tGravityAccMag-SMA-1'})
+        df_feature.append(sma)
+   
+        # tGravityAccMag-Energy-1
+        a=group_square['tGravityAccMag'].sum().drop(columns=['experimentID'])
+        b=group['tGravityAccMag'].count().drop(columns=['experimentID'])
+        df_feature.append((a/b).rename(columns={'tGravityAccMag':'tGravityAccMag-Energy-1'}))
+
+        # tGravityAccMag-IQR-1              
+        a=group['tGravityAccMag'].quantile(0.75).reset_index(drop=True)
+        b=group['tGravityAccMag'].quantile(0.25).reset_index(drop=True)
+        df_feature.append(pd.DataFrame((a-b)).rename(columns={0:'tGravityAccMag-IQR-1'}))
+
+        # tGravityAccMag-ropy-1      
+        x=pd.DataFrame(group['tGravityAccMag'].apply(entropy).reset_index(drop=True)).rename(columns={0:'tGravityAccMag-ropy-1'})
+        df_feature.append(x)
+      
+        # tGravityAccMag-ARCoeff-1          
+        # tGravityAccMag-ARCoeff-2          
+        # tGravityAccMag-ARCoeff-3          
+        # tGravityAccMag-ARCoeff-4     
+        a=group['tGravityAccMag'].apply(lambda x: list(x)).drop(columns='experimentID').reset_index(drop=True)
+        b=pd.DataFrame(a)
+        mask=(group['tGravityAccMag'].count()['tGravityAccMag']>3).values.tolist()
+        b_valid = b[mask]
+        c=b_valid[0].apply(lambda x: _arburg2(x,4))
+        d = pd.DataFrame(c)
+        e=d.apply(lambda x: [y[0] for y in list(x)])
+        df_feature.append(e.apply(lambda x: [y[1] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tGravityAccMag-ARCoeff-1'}))
+        df_feature.append(e.apply(lambda x: [y[2] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tGravityAccMag-ARCoeff-2'}))
+        df_feature.append(e.apply(lambda x: [y[3] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tGravityAccMag-ARCoeff-3'}))
+        df_feature.append(e.apply(lambda x: [y[4] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tGravityAccMag-ARCoeff-4'}))
+        
         print('Processing tBodyAccJerkMag')    
         # tBodyAccJerkMag-Mean-1         
         # tBodyAccJerkMag-STD-1          
@@ -841,19 +925,57 @@ for name in files[:1]: # Remove the limiter [:1] before the final product
         # tBodyAccJerkMag-ARCoeff-4     
         
         print('Processing tBodyGyroMag')
-        # tBodyGyroMag-Mean-1            
-        # tBodyGyroMag-STD-1             
-        # tBodyGyroMag-Mad-1             
-        # tBodyGyroMag-Max-1             
-        # tBodyGyroMag-Min-1             
-        # tBodyGyroMag-SMA-1             
-        # tBodyGyroMag-Energy-1          
-        # tBodyGyroMag-IQR-1             
-        # tBodyGyroMag-ropy-1            
-        # tBodyGyroMag-ARCoeff-1         
-        # tBodyGyroMag-ARCoeff-2         
-        # tBodyGyroMag-ARCoeff-3         
-        # tBodyGyroMag-ARCoeff-4   
+
+        # tBodyGyroMag-Mean-1        
+        df_feature.append(group['tBodyGyroMag'].mean().rename(columns={'tBodyGyroMag':'tBodyGyroMag-Mean-1'}).drop(columns=['experimentID']))
+        
+        # tBodyGyroMag-STD-1              
+        df_feature.append(group['tBodyGyroMag'].std().rename(columns={'tBodyGyroMag':'tBodyGyroMag-STD-1'}).drop(columns=['experimentID']))
+
+        # tBodyGyroMag-Mad-1              
+        df_feature.append(pd.DataFrame(group['tBodyGyroMag'].apply(lambda x: median_absolute_deviation(x)).rename(columns={'tBodyAcc':'tBodyGyroMag-Mad-1'}).reset_index(drop=True)).rename(columns={0:'tBodyGyroMag-Mad-1'}))
+
+        # tBodyGyroMag-Max-1              
+        df_feature.append(group['tBodyGyroMag'].max().rename(columns={'tBodyGyroMag':'tBodyGyroMag-Max-1'}).drop(columns=['experimentID']))
+
+        # tBodyGyroMag-Min-1              
+        df_feature.append(group['tBodyGyroMag'].min().rename(columns={'tBodyGyroMag':'tBodyGyroMag-Min-1'}).drop(columns=['experimentID']))
+
+        # tBodyGyroMag-SMA-1              
+        x=group['tBodyGyroMag'].apply(lambda x:list(x)).reset_index(drop=True)
+        x=pd.DataFrame(x.apply(lambda lst: [abs(x) for x in lst]).apply(lambda x: sum(x)))
+        sma=(x).rename(columns={0:'tBodyGyroMag-SMA-1'})
+        df_feature.append(sma)
+   
+        # tBodyGyroMag-Energy-1
+        a=group_square['tBodyGyroMag'].sum().drop(columns=['experimentID'])
+        b=group['tBodyGyroMag'].count().drop(columns=['experimentID'])
+        df_feature.append((a/b).rename(columns={'tBodyGyroMag':'tBodyGyroMag-Energy-1'}))
+
+        # tBodyGyroMag-IQR-1              
+        a=group['tBodyGyroMag'].quantile(0.75).reset_index(drop=True)
+        b=group['tBodyGyroMag'].quantile(0.25).reset_index(drop=True)
+        df_feature.append(pd.DataFrame((a-b)).rename(columns={0:'tBodyGyroMag-IQR-1'}))
+
+        # tBodyGyroMag-ropy-1      
+        x=pd.DataFrame(group['tBodyGyroMag'].apply(entropy).reset_index(drop=True)).rename(columns={0:'tBodyGyroMag-ropy-1'})
+        df_feature.append(x)
+      
+        # tBodyGyroMag-ARCoeff-1          
+        # tBodyGyroMag-ARCoeff-2          
+        # tBodyGyroMag-ARCoeff-3          
+        # tBodyGyroMag-ARCoeff-4     
+        a=group['tBodyGyroMag'].apply(lambda x: list(x)).drop(columns='experimentID').reset_index(drop=True)
+        b=pd.DataFrame(a)
+        mask=(group['tBodyGyroMag'].count()['tBodyGyroMag']>3).values.tolist()
+        b_valid = b[mask]
+        c=b_valid[0].apply(lambda x: _arburg2(x,4))
+        d = pd.DataFrame(c)
+        e=d.apply(lambda x: [y[0] for y in list(x)])
+        df_feature.append(e.apply(lambda x: [y[1] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tBodyGyroMag-ARCoeff-1'}))
+        df_feature.append(e.apply(lambda x: [y[2] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tBodyGyroMag-ARCoeff-2'}))
+        df_feature.append(e.apply(lambda x: [y[3] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tBodyGyroMag-ARCoeff-3'}))
+        df_feature.append(e.apply(lambda x: [y[4] for y in list(x)]).apply(lambda x: x.real).rename(columns={0:'tBodyGyroMag-ARCoeff-4'})) 
     
         print('Processing tBodyGyroJerkMag')      
         # tBodyGyroJerkMag-Mean-1        
