@@ -54,6 +54,7 @@ for name in files[:1]: # Remove the limiter [:1] before the final product
     df_out = df
     df_out=df_out.reset_index()
     
+    # Calculations for magnitude
     df_body_acc_mag = np.sqrt(np.square(df[['tBodyAcc-X','tBodyAcc-Y','tBodyAcc-Z']]).sum(axis=1)).reset_index(drop=True).rename(columns={0:'tBodyAccMag'})
     df_gravity_acc_mag = np.sqrt(np.square(df[['tGravityAcc-X','tGravityAcc-Y','tGravityAcc-Z']]).sum(axis=1)).reset_index(drop=True).rename(columns={0:'tGravityAccMag'})
     df_body_gyro_mag = np.sqrt(np.square(df[['tBodyGyro-X','tBodyGyro-Y','tBodyGyro-Z']]).sum(axis=1)).reset_index(drop=True).rename(columns={0:'tBodyGyroMag'})
@@ -1065,9 +1066,40 @@ for name in files[:1]: # Remove the limiter [:1] before the final product
         df_feature.append(e.apply(lambda x: [y[4] for y in list(x)]).apply(lambda x: x.real).rename(columns={'tBodyGyroJerkMag':'tBodyGyroJerkMag-ARCoeff-4'}))      
         
         print('Processing f-transformed')
+        # FFT applied with real values only as output
+        
+        #
+        #
+        # Not sure how to appply this. When you plot the data it comes out
+        # as a symmetric pattern
+        #
+        
+        
+        df_f = df_out.apply(lambda x: np.real(np.fft.fft(x))).rename(columns=
+                           {'tBodyAcc-X':'fBodyAcc-X','tBodyAcc-Y':'fBodyAcc-Y','tBodyAcc-Z':'fBodyAcc-Z',
+                            'tBodyAccJerk-X':'fBodyAccJerk-X','tBodyAccJerk-Y':'fBodyAccJerk-Y','tBodyAccJerk-Z':'fBodyAccJerk-Z',
+                            'tBodyGyro-X':'fBodyGyro-X','tBodyGyro-Y':'fBodyGyro-Y','tBodyGyro-Z':'fBodyGyro-Z',
+                            'tBodyAccMag':'fBodyAccMag','tBodyAccJerkMag':'fBodyAccJerkMag',
+                            'tBodyGyroMag':'fBodyGyroMag','tBodyGyroJerkMag':'fBodyGyroJerkMag'})   
+        df_f=df_f.drop(columns=['tGravityAcc-X','tGravityAcc-Y','tGravityAcc-Z','tGravityAccMag'])    
+        df_f['experimentID'] = df_out['experimentID']
+        df_f['userID'] = df_out['userID']
+        df_f['activityID'] = df_out['activityID']
+        df_f['index'] = sub_index
+
+        group_f = df_f.groupby(['experimentID',sub_index//(seconds*hz)*hz], as_index=False)
+        group_square_f = pow(df_f,2).groupby(['experimentID',sub_index//(seconds*hz)*hz], as_index=False)
+        # Initilze the feature list, which is a list that contains several
+
         # fBodyAcc-Mean-1                
         # fBodyAcc-Mean-2                
         # fBodyAcc-Mean-3                
+
+#        df_feature.append(
+#                group_f['fBodyAcc-X','fBodyAcc-Y','fBodyAcc-Z'].mean().rename(columns={'tBodyAcc-X':'tBodyAcc-Mean-1','tBodyAcc-Y':'tBodyAcc-Mean-2','tBodyAcc-Z':'tBodyAcc-Mean-3'}).drop(columns=['experimentID'])
+#                )
+
+
         # fBodyAcc-STD-1                 
         # fBodyAcc-STD-2                 
         # fBodyAcc-STD-3                 
@@ -1143,7 +1175,10 @@ for name in files[:1]: # Remove the limiter [:1] before the final product
         # fBodyAcc-BandsEnergyOld-39     
         # fBodyAcc-BandsEnergyOld-40     
         # fBodyAcc-BandsEnergyOld-41     
-        # fBodyAcc-BandsEnergyOld-42     
+        # fBodyAcc-BandsEnergyOld-42   
+        
+        
+        
         # fBodyAccJerk-Mean-1            
         # fBodyAccJerk-Mean-2            
         # fBodyAccJerk-Mean-3            
@@ -1223,6 +1258,9 @@ for name in files[:1]: # Remove the limiter [:1] before the final product
         # fBodyAccJerk-BandsEnergyOld-40 
         # fBodyAccJerk-BandsEnergyOld-41 
         # fBodyAccJerk-BandsEnergyOld-42 
+        
+        
+        
         # fBodyGyro-Mean-1               
         # fBodyGyro-Mean-2               
         # fBodyGyro-Mean-3               
@@ -1301,7 +1339,10 @@ for name in files[:1]: # Remove the limiter [:1] before the final product
         # fBodyGyro-BandsEnergyOld-39    
         # fBodyGyro-BandsEnergyOld-40    
         # fBodyGyro-BandsEnergyOld-41    
-        # fBodyGyro-BandsEnergyOld-42    
+        # fBodyGyro-BandsEnergyOld-42  
+        
+        
+        
         # fBodyAccMag-Mean-1             
         # fBodyAccMag-STD-1              
         # fBodyAccMag-Mad-1              
@@ -1314,7 +1355,10 @@ for name in files[:1]: # Remove the limiter [:1] before the final product
         # fBodyAccMag-MaxInds-1          
         # fBodyAccMag-MeanFreq-1         
         # fBodyAccMag-Skewness-1         
-        # fBodyAccMag-Kurtosis-1         
+        # fBodyAccMag-Kurtosis-1  
+        
+        
+        
         # fBodyAccJerkMag-Mean-1         
         # fBodyAccJerkMag-STD-1          
         # fBodyAccJerkMag-Mad-1          
@@ -1327,7 +1371,10 @@ for name in files[:1]: # Remove the limiter [:1] before the final product
         # fBodyAccJerkMag-MaxInds-1      
         # fBodyAccJerkMag-MeanFreq-1     
         # fBodyAccJerkMag-Skewness-1     
-        # fBodyAccJerkMag-Kurtosis-1     
+        # fBodyAccJerkMag-Kurtosis-1  
+        
+        
+        
         # fBodyGyroMag-Mean-1            
         # fBodyGyroMag-STD-1             
         # fBodyGyroMag-Mad-1             
@@ -1340,7 +1387,10 @@ for name in files[:1]: # Remove the limiter [:1] before the final product
         # fBodyGyroMag-MaxInds-1         
         # fBodyGyroMag-MeanFreq-1        
         # fBodyGyroMag-Skewness-1        
-        # fBodyGyroMag-Kurtosis-1        
+        # fBodyGyroMag-Kurtosis-1   
+        
+        
+        
         # fBodyGyroJerkMag-Mean-1        
         # fBodyGyroJerkMag-STD-1         
         # fBodyGyroJerkMag-Mad-1         
@@ -1353,7 +1403,10 @@ for name in files[:1]: # Remove the limiter [:1] before the final product
         # fBodyGyroJerkMag-MaxInds-1     
         # fBodyGyroJerkMag-MeanFreq-1    
         # fBodyGyroJerkMag-Skewness-1    
-        # fBodyGyroJerkMag-Kurtosis-1    
+        # fBodyGyroJerkMag-Kurtosis-1   
+        
+        
+        
         # tBodyAcc-AngleWRTGravity-1     
         # tBodyAccJerk-AngleWRTGravity-1 
         # tBodyGyro-AngleWRTGravity-1    

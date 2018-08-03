@@ -73,13 +73,14 @@ def get_data():
         # Iterate through each of the frequencies, aka downsampling
         for hz in [5,10,25,50]:
             # Downsample by observing every n-th entry based on the ratio
-            butter_filt = scipy.signal.butter(3, 20/(50/2))
-            butter_filt_2 = scipy.signal.butter(3, 0.3/(50/2))
+            #butter_filt = scipy.signal.butter(3, 20/(50/2))
+            butter_filt_2 = scipy.signal.butter(3, 0.3/(hz/2))
             if hz==50:
                 df2 = df.reset_index(drop=True)
+                # This is the median filter
                 df_filt=df[[0,1,2]].apply(scipy.signal.medfilt)
-                df_filt_2 = df_filt.apply(lambda x: scipy.signal.lfilter(butter_filt[0],butter_filt[1],x))
-                df_out = pd.concat([df2[['experimentID', 'userID', 'activityID']],df_filt_2], axis=1)
+                #df_filt_2 = df_filt.apply(lambda x: scipy.signal.lfilter(butter_filt[0],butter_filt[1],x))
+                df_out = pd.concat([df2[['experimentID', 'userID', 'activityID']],df_filt], axis=1)
                 if 'acc' in filename:
                     df_g = df_filt.apply(lambda x: scipy.signal.lfilter(butter_filt_2[0],butter_filt_2[1],x))
                     df_out['tGravityAcc-X'] = df_g[0]
@@ -96,8 +97,8 @@ def get_data():
             elif hz==25:
                 df2 = df[df.index%2==0].reset_index(drop=True)
                 df_filt=df2[[0,1,2]].apply(scipy.signal.medfilt)
-                df_filt_2 = df_filt.apply(lambda x: scipy.signal.lfilter(butter_filt[0],butter_filt[1],x))
-                df_out = pd.concat([df2[['experimentID', 'userID', 'activityID']],df_filt_2], axis=1)
+                #df_filt_2 = df_filt.apply(lambda x: scipy.signal.lfilter(butter_filt[0],butter_filt[1],x))
+                df_out = pd.concat([df2[['experimentID', 'userID', 'activityID']],df_filt], axis=1)
                 if 'acc' in filename:
                     df_g = df_filt.apply(lambda x: scipy.signal.lfilter(butter_filt_2[0],butter_filt_2[1],x))
                     df_out['tGravityAcc-X'] = df_g[0]
@@ -114,8 +115,8 @@ def get_data():
             elif hz==10:
                 df2 = df[df.index%5==0].reset_index(drop=True)
                 df_filt=df2[[0,1,2]].apply(scipy.signal.medfilt)
-                df_filt_2 = df_filt.apply(lambda x: scipy.signal.lfilter(butter_filt[0],butter_filt[1],x))
-                df_out = pd.concat([df2[['experimentID', 'userID', 'activityID']],df_filt_2], axis=1)
+                #df_filt_2 = df_filt.apply(lambda x: scipy.signal.lfilter(butter_filt[0],butter_filt[1],x))
+                df_out = pd.concat([df2[['experimentID', 'userID', 'activityID']],df_filt], axis=1)
                 if 'acc' in filename:
                     df_g = df_filt.apply(lambda x: scipy.signal.lfilter(butter_filt_2[0],butter_filt_2[1],x))
                     df_out['tGravityAcc-X'] = df_g[0]
@@ -132,8 +133,8 @@ def get_data():
             else:
                 df2 = df[df.index%10==0].reset_index(drop=True)
                 df_filt=df2[[0,1,2]].apply(scipy.signal.medfilt)
-                df_filt_2 = df_filt.apply(lambda x: scipy.signal.lfilter(butter_filt[0],butter_filt[1],x))
-                df_out = pd.concat([df2[['experimentID', 'userID', 'activityID']],df_filt_2], axis=1)
+                #df_filt_2 = df_filt.apply(lambda x: scipy.signal.lfilter(butter_filt[0],butter_filt[1],x))
+                df_out = pd.concat([df2[['experimentID', 'userID', 'activityID']],df_filt], axis=1)
                 if 'acc' in filename:
                     df_g = df_filt.apply(lambda x: scipy.signal.lfilter(butter_filt_2[0],butter_filt_2[1],x))
                     df_out['tGravityAcc-X'] = df_g[0]
