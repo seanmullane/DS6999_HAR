@@ -411,7 +411,7 @@ for name in files[:1]: # Remove the limiter [:1] before the final product
         x=tBodyAccJerkX.apply(lambda lst: [sum(abs(x)) for x in lst])
         y=tBodyAccJerkX.apply(lambda lst: [sum(abs(x)) for x in lst])
         z=tBodyAccJerkX.apply(lambda lst: [sum(abs(x)) for x in lst])
-        sma=(x+y+z).rename(columns={'tBodyAccJerk-X':'tBodyJerkAcc-SMA-1'})
+        sma=(x+y+z).rename(columns={'tBodyAccJerk-X':'tBodyAccJerk-SMA-1'})
         df_feature.append(sma)
           
         # tBodyAccJerk-Energy-1          
@@ -473,7 +473,6 @@ for name in files[:1]: # Remove the limiter [:1] before the final product
         df_feature.append(e.apply(lambda x: [y[2] for y in list(x)]).apply(lambda x: x.real).rename(columns={'tBodyAccJerk-Y':'tBodyAccJerk-ARCoeff-6'}))
         df_feature.append(e.apply(lambda x: [y[3] for y in list(x)]).apply(lambda x: x.real).rename(columns={'tBodyAccJerk-Y':'tBodyAccJerk-ARCoeff-7'}))
         df_feature.append(e.apply(lambda x: [y[4] for y in list(x)]).apply(lambda x: x.real).rename(columns={'tBodyAccJerk-Y':'tBodyAccJerk-ARCoeff-8'}))
-        
         
         # tBodyAccJerk-ARCoeff-9         
         # tBodyAccJerk-ARCoeff-10        
@@ -648,47 +647,154 @@ for name in files[:1]: # Remove the limiter [:1] before the final product
         df_feature.append(pd.DataFrame(xy.apply(lambda x: x[0])).rename(columns={0:'tBodyGyro-Correlation-3'}))      
     
         print('Processing tBodyGyroJerk')
-        # tBodyGyroJerk-Mean-1           
-        # tBodyGyroJerk-Mean-2           
-        # tBodyGyroJerk-Mean-3           
-        # tBodyGyroJerk-STD-1            
-        # tBodyGyroJerk-STD-2            
-        # tBodyGyroJerk-STD-3            
-        # tBodyGyroJerk-Mad-1            
-        # tBodyGyroJerk-Mad-2            
-        # tBodyGyroJerk-Mad-3            
-        # tBodyGyroJerk-Max-1            
-        # tBodyGyroJerk-Max-2            
-        # tBodyGyroJerk-Max-3            
-        # tBodyGyroJerk-Min-1            
-        # tBodyGyroJerk-Min-2            
-        # tBodyGyroJerk-Min-3            
-        # tBodyGyroJerk-SMA-1            
-        # tBodyGyroJerk-Energy-1         
-        # tBodyGyroJerk-Energy-2         
-        # tBodyGyroJerk-Energy-3         
-        # tBodyGyroJerk-IQR-1            
-        # tBodyGyroJerk-IQR-2            
-        # tBodyGyroJerk-IQR-3            
-        # tBodyGyroJerk-ropy-1           
-        # tBodyGyroJerk-ropy-1           
-        # tBodyGyroJerk-ropy-1           
-        # tBodyGyroJerk-ARCoeff-1        
-        # tBodyGyroJerk-ARCoeff-2        
-        # tBodyGyroJerk-ARCoeff-3        
-        # tBodyGyroJerk-ARCoeff-4        
-        # tBodyGyroJerk-ARCoeff-5        
-        # tBodyGyroJerk-ARCoeff-6        
-        # tBodyGyroJerk-ARCoeff-7        
-        # tBodyGyroJerk-ARCoeff-8        
-        # tBodyGyroJerk-ARCoeff-9        
-        # tBodyGyroJerk-ARCoeff-10       
-        # tBodyGyroJerk-ARCoeff-11       
-        # tBodyGyroJerk-ARCoeff-12       
-        # tBodyGyroJerk-Correlation-1    
-        # tBodyGyroJerk-Correlation-2    
-        # tBodyGyroJerk-Correlation-3  
+     
+        tBodyGyroJerkX = pd.DataFrame(group['tBodyGyro-X'].apply(lambda x: list(x)).apply(lambda row: np.diff(row)/(1/hz)).reset_index(drop=True)).rename(columns={0:'tBodyGyroJerk-X'})
+        tBodyGyroJerkY = pd.DataFrame(group['tBodyGyro-Y'].apply(lambda x: list(x)).apply(lambda row: np.diff(row)/(1/hz)).reset_index(drop=True)).rename(columns={0:'tBodyGyroJerk-Y'})
+        tBodyGyroJerkZ = pd.DataFrame(group['tBodyGyro-Z'].apply(lambda x: list(x)).apply(lambda row: np.diff(row)/(1/hz)).reset_index(drop=True)).rename(columns={0:'tBodyGyroJerk-Z'})
+        # Remove all cases where there is no data.
+        tBodyGyroJerkX = tBodyGyroJerkX[tBodyGyroJerkX['tBodyGyroJerk-X'].map(len)>0]
+        tBodyGyroJerkY = tBodyGyroJerkY[tBodyGyroJerkY['tBodyGyroJerk-Y'].map(len)>0]
+        tBodyGyroJerkZ = tBodyGyroJerkZ[tBodyGyroJerkZ['tBodyGyroJerk-Z'].map(len)>0]
         
+        # tBodyGyroJerk-Mean-1       
+        # tBodyGyroJerk-Mean-2            
+        # tBodyGyroJerk-Mean-3
+        df_feature.append(tBodyGyroJerkX.apply(lambda row: [np.mean(y) for y in row]).rename(columns={'tBodyGyroJerk-X':'tBodyGyroJerk-Mean-1'}))
+        df_feature.append(tBodyGyroJerkY.apply(lambda row: [np.mean(y) for y in row]).rename(columns={'tBodyGyroJerk-Y':'tBodyGyroJerk-Mean-2'}))
+        df_feature.append(tBodyGyroJerkZ.apply(lambda row: [np.mean(y) for y in row]).rename(columns={'tBodyGyroJerk-Z':'tBodyGyroJerk-Mean-3'}))
+    
+        # tBodyGyroJerk-STD-1                 
+        # tBodyGyroJerk-STD-2                 
+        # tBodyGyroJerk-STD-3                 
+        df_feature.append(tBodyGyroJerkX.apply(lambda row: [np.std(y) for y in row]).rename(columns={'tBodyGyroJerk-X':'tBodyGyroJerk-STD-1'}))
+        df_feature.append(tBodyGyroJerkY.apply(lambda row: [np.std(y) for y in row]).rename(columns={'tBodyGyroJerk-Y':'tBodyGyroJerk-STD-2'}))
+        df_feature.append(tBodyGyroJerkZ.apply(lambda row: [np.std(y) for y in row]).rename(columns={'tBodyGyroJerk-Z':'tBodyGyroJerk-STD-3'}))
+          
+        # tBodyGyroJerk-Mad-1
+        # tBodyGyroJerk-Mad-2                 
+        # tBodyGyroJerk-Mad-3
+        df_feature.append(tBodyGyroJerkX.apply(lambda row: [mad2(y) for y in row]).rename(columns={'tBodyGyroJerk-X':'tBodyGyroJerk-Mad-1'}))
+        df_feature.append(tBodyGyroJerkY.apply(lambda row: [mad2(y) for y in row]).rename(columns={'tBodyGyroJerk-Y':'tBodyGyroJerk-Mad-2'}))
+        df_feature.append(tBodyGyroJerkZ.apply(lambda row: [mad2(y) for y in row]).rename(columns={'tBodyGyroJerk-Z':'tBodyGyroJerk-Mad-3'}))
+              
+        # tBodyGyroJerk-Max-1
+        # tBodyGyroJerk-Max-2                 
+        # tBodyGyroJerk-Max-3
+        df_feature.append(tBodyGyroJerkX.apply(lambda x: [np.sort(y)[-1:].sum() for y in x]).rename(columns={'tBodyGyroJerk-X':'tBodyJerk-Max-1'}))
+        df_feature.append(tBodyGyroJerkY.apply(lambda x: [np.sort(y)[-1:].sum() for y in x]).rename(columns={'tBodyGyroJerk-Y':'tBodyJerk-Max-2'}))
+        df_feature.append(tBodyGyroJerkZ.apply(lambda x: [np.sort(y)[-1:].sum() for y in x]).rename(columns={'tBodyGyroJerk-Z':'tBodyJerk-Max-3'}))
+        
+        # tBodyGyroJerk-Min-1                 
+        # tBodyGyroJerk-Min-2                 
+        # tBodyGyroJerk-Min-3                 
+        df_feature.append(tBodyGyroJerkX.apply(lambda x: [np.sort(y)[:1].sum() for y in x]).rename(columns={'tBodyGyroJerk-X':'tBodyJerk-Min-1'}))
+        df_feature.append(tBodyGyroJerkY.apply(lambda x: [np.sort(y)[:1].sum() for y in x]).rename(columns={'tBodyGyroJerk-Y':'tBodyJerk-Min-2'}))
+        df_feature.append(tBodyGyroJerkZ.apply(lambda x: [np.sort(y)[:1].sum() for y in x]).rename(columns={'tBodyGyroJerk-Z':'tBodyJerk-Min-3'}))
+
+        # tBodyGyroJerk-SMA-1
+        x=tBodyGyroJerkX.apply(lambda lst: [sum(abs(x)) for x in lst])
+        y=tBodyGyroJerkX.apply(lambda lst: [sum(abs(x)) for x in lst])
+        z=tBodyGyroJerkX.apply(lambda lst: [sum(abs(x)) for x in lst])
+        sma=(x+y+z).rename(columns={'tBodyGyroJerk-X':'tBodyGyroJerk-SMA-1'})
+        df_feature.append(sma)
+          
+        # tBodyGyroJerk-Energy-1          
+        # tBodyGyroJerk-Energy-2          
+        # tBodyGyroJerk-Energy-3 
+        x=(tBodyGyroJerkX**2).apply(lambda lst: [sum(x)/len(x) for x in lst]).rename(columns={'tBodyGyroJerk-X':'tBodyJerk-Energy-1'})
+        y=(tBodyGyroJerkY**2).apply(lambda lst: [sum(x)/len(x) for x in lst]).rename(columns={'tBodyGyroJerk-Y':'tBodyJerk-Energy-2'})
+        z=(tBodyGyroJerkZ**2).apply(lambda lst: [sum(x)/len(x) for x in lst]).rename(columns={'tBodyGyroJerk-Z':'tBodyJerk-Energy-3'})
+        df_feature.append(x)
+        df_feature.append(y)
+        df_feature.append(z)
+        
+        # tBodyGyroJerk-IQR-1             
+        # tBodyGyroJerk-IQR-2             
+        # tBodyGyroJerk-IQR-3
+        x=pd.DataFrame(tBodyGyroJerkX['tBodyGyroJerk-X'].apply(lambda x: np.percentile(x,75)-np.percentile(x,25))).rename(columns={'tBodyGyroJerk-X':'tBodyJerk-IQR-1'})
+        y=pd.DataFrame(tBodyGyroJerkY['tBodyGyroJerk-Y'].apply(lambda x: np.percentile(x,75)-np.percentile(x,25))).rename(columns={'tBodyGyroJerk-Y':'tBodyJerk-IQR-2'})
+        z=pd.DataFrame(tBodyGyroJerkZ['tBodyGyroJerk-Z'].apply(lambda x: np.percentile(x,75)-np.percentile(x,25))).rename(columns={'tBodyGyroJerk-Z':'tBodyJerk-IQR-3'})
+        df_feature.append(x)
+        df_feature.append(y)
+        df_feature.append(z)
+           
+        # tBodyGyroJerk-ropy-1            
+        # tBodyGyroJerk-ropy-2            
+        # tBodyGyroJerk-ropy-3
+        x=pd.DataFrame(tBodyGyroJerkX['tBodyGyroJerk-X'].apply(lambda x: entropy(x))).rename(columns={'tBodyGyroJerk-X':'tBodyGyroJerk-ropy-1'})
+        y=pd.DataFrame(tBodyGyroJerkY['tBodyGyroJerk-Y'].apply(lambda x: entropy(x))).rename(columns={'tBodyGyroJerk-Y':'tBodyGyroJerk-ropy-2'})
+        z=pd.DataFrame(tBodyGyroJerkZ['tBodyGyroJerk-Z'].apply(lambda x: entropy(x))).rename(columns={'tBodyGyroJerk-Z':'tBodyGyroJerk-ropy-3'})
+        df_feature.append(x)
+        df_feature.append(y)
+        df_feature.append(z)
+         
+        # tBodyGyroJerk-ARCoeff-1         
+        # tBodyGyroJerk-ARCoeff-2         
+        # tBodyGyroJerk-ARCoeff-3         
+        # tBodyGyroJerk-ARCoeff-4
+        mask=tBodyGyroJerkX.apply(lambda lst: [len(x) for x in lst])>3
+        # This will just return NaN values for too small of sample sizes
+        valid=tBodyGyroJerkX[mask].dropna()
+        c=valid.apply(lambda lst: [_arburg2(x,4) for x in lst])
+        d = pd.DataFrame(c)
+        e=d.apply(lambda x: [y[0] for y in list(x)])
+        df_feature.append(e.apply(lambda x: [y[1] for y in list(x)]).apply(lambda x: x.real).rename(columns={'tBodyGyroJerk-X':'tBodyGyroJerk-ARCoeff-1'}))
+        df_feature.append(e.apply(lambda x: [y[2] for y in list(x)]).apply(lambda x: x.real).rename(columns={'tBodyGyroJerk-X':'tBodyGyroJerk-ARCoeff-2'}))
+        df_feature.append(e.apply(lambda x: [y[3] for y in list(x)]).apply(lambda x: x.real).rename(columns={'tBodyGyroJerk-X':'tBodyGyroJerk-ARCoeff-3'}))
+        df_feature.append(e.apply(lambda x: [y[4] for y in list(x)]).apply(lambda x: x.real).rename(columns={'tBodyGyroJerk-X':'tBodyGyroJerk-ARCoeff-4'}))
+        
+        # tBodyGyroJerk-ARCoeff-5         
+        # tBodyGyroJerk-ARCoeff-6         
+        # tBodyGyroJerk-ARCoeff-7         
+        # tBodyGyroJerk-ARCoeff-8
+        mask=tBodyGyroJerkY.apply(lambda lst: [len(x) for x in lst])>3
+        # This will just return NaN values for too small of sample sizes
+        valid=tBodyGyroJerkY[mask].dropna()
+        c=valid.apply(lambda lst: [_arburg2(x,4) for x in lst])
+        d = pd.DataFrame(c)
+        e=d.apply(lambda x: [y[0] for y in list(x)])
+        df_feature.append(e.apply(lambda x: [y[1] for y in list(x)]).apply(lambda x: x.real).rename(columns={'tBodyGyroJerk-Y':'tBodyGyroJerk-ARCoeff-5'}))
+        df_feature.append(e.apply(lambda x: [y[2] for y in list(x)]).apply(lambda x: x.real).rename(columns={'tBodyGyroJerk-Y':'tBodyGyroJerk-ARCoeff-6'}))
+        df_feature.append(e.apply(lambda x: [y[3] for y in list(x)]).apply(lambda x: x.real).rename(columns={'tBodyGyroJerk-Y':'tBodyGyroJerk-ARCoeff-7'}))
+        df_feature.append(e.apply(lambda x: [y[4] for y in list(x)]).apply(lambda x: x.real).rename(columns={'tBodyGyroJerk-Y':'tBodyGyroJerk-ARCoeff-8'}))
+        
+        # tBodyGyroJerk-ARCoeff-9         
+        # tBodyGyroJerk-ARCoeff-10        
+        # tBodyGyroJerk-ARCoeff-11        
+        # tBodyGyroJerk-ARCoeff-12        
+        mask=tBodyGyroJerkZ.apply(lambda lst: [len(x) for x in lst])>3
+        # This will just return NaN values for too small of sample sizes
+        valid=tBodyGyroJerkZ[mask].dropna()
+        c=valid.apply(lambda lst: [_arburg2(x,4) for x in lst])
+        d = pd.DataFrame(c)
+        e=d.apply(lambda x: [y[0] for y in list(x)])
+        df_feature.append(e.apply(lambda x: [y[1] for y in list(x)]).apply(lambda x: x.real).rename(columns={'tBodyGyroJerk-Z':'tBodyGyroJerk-ARCoeff-9'}))
+        df_feature.append(e.apply(lambda x: [y[2] for y in list(x)]).apply(lambda x: x.real).rename(columns={'tBodyGyroJerk-Z':'tBodyGyroJerk-ARCoeff-10'}))
+        df_feature.append(e.apply(lambda x: [y[3] for y in list(x)]).apply(lambda x: x.real).rename(columns={'tBodyGyroJerk-Z':'tBodyGyroJerk-ARCoeff-11'}))
+        df_feature.append(e.apply(lambda x: [y[4] for y in list(x)]).apply(lambda x: x.real).rename(columns={'tBodyGyroJerk-Z':'tBodyGyroJerk-ARCoeff-12'}))
+
+        # tBodyGyroJerk-Correlation-1     
+        # tBodyGyroJerk-Correlation-2     
+        # tBodyGyroJerk-Correlation-3
+        x=tBodyGyroJerkX
+        y=tBodyGyroJerkY
+        z=tBodyGyroJerkZ
+        
+        yz=pd.concat([y,z],axis=1)
+        yz.columns = ['y','z']
+        yz=yz.apply(lambda row: pearsonr(row['y'],row['z']), axis=1)
+        df_feature.append(pd.DataFrame(yz.apply(lambda x: x[0])).rename(columns={0:'tBodyGyroJerk-Correlation-1'}))
+        
+        xz=pd.concat([x,z],axis=1)
+        xz.columns = ['x','z']
+        xz=xz.apply(lambda row: pearsonr(row['x'],row['z']), axis=1)
+        df_feature.append(pd.DataFrame(xz.apply(lambda x: x[0])).rename(columns={0:'tBodyGyroJerk-Correlation-2'}))
+
+        xy=pd.concat([x,y],axis=1)
+        xy.columns = ['x','y']
+        xy=xy.apply(lambda row: pearsonr(row['x'],row['y']), axis=1)
+        df_feature.append(pd.DataFrame(xy.apply(lambda x: x[0])).rename(columns={0:'tBodyGyroJerk-Correlation-3'}))
+
         print('Processing tBodyAccMag')
         # tBodyAccMag-Mean-1             
         # tBodyAccMag-STD-1              
