@@ -30,16 +30,16 @@ def feature_extract():
     ct = 0
     
     # Check all 4 hz files
-    for name in files: # Remove the limiter [:1] before the final product
+    for name in files:
         ct += 1
         print(ct, "/", 4, name)
     
         # Set the value of hz based on the name of the file
-        if '5hz' in name:
+        if name==files[0]:
             hz = 5
-        elif '10hz' in name:
+        elif name==files[1]:
             hz = 10
-        elif '25hz' in name:
+        elif name==files[2]:
             hz = 25
         else:
             hz = 50
