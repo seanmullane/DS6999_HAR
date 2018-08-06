@@ -82,13 +82,13 @@ def split_scale():
     
         # Print Training
         os.chdir(train)
-        a_scale.to_csv(str(hz)+'hz'+str(seconds)+'s_train_X.csv',sep='\t')
-        c.to_csv(str(hz)+'hz'+str(seconds)+'s_train_Y.csv',sep='\t')    
+        a_scale.to_csv(str(hz)+'hz'+str(seconds)+'s_train_X.csv',sep='\t',index=False)
+        c.to_csv(str(hz)+'hz'+str(seconds)+'s_train_Y.csv',sep='\t',index=False)    
         
         # Print Testing
         os.chdir(test)
-        b_scale.to_csv(str(hz)+'hz'+str(seconds)+'s_test_X.csv',sep='\t')
-        d.to_csv(str(hz)+'hz'+str(seconds)+'s_test_X.csv',sep='\t')
+        b_scale.to_csv(str(hz)+'hz'+str(seconds)+'s_test_X.csv',sep='\t',index=False)
+        d.to_csv(str(hz)+'hz'+str(seconds)+'s_test_Y.csv',sep='\t',index=False)
     
 if __name__ == '__main__':
     split_scale()
