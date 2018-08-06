@@ -6,6 +6,8 @@ import os
 import pandas as pd
 from scipy.stats import pearsonr
 from scipy.stats import entropy
+from scipy.stats import skew
+from scipy.stats import kurtosis
 
 #Set home directory for relative paths, comment in/out as needed
 homedir = '/Users/SM/DSI/classes/DS6999/DS6999_HAR/' #Sean's home dir
@@ -1079,9 +1081,6 @@ def feature_extract():
             
             df_f = pd.DataFrame()
             
-            # Get frequency buckets for this sampling profile
-            freqbuckets = np.fft.rfftfreq(hz*seconds, 1/hz)
-            
             # Calculate FFT of each raw column
             df_f['fBodyAcc-X'] = group['tBodyAcc-X'].apply(lambda x: np.absolute(np.fft.rfft(x))).reset_index()['tBodyAcc-X']
             df_f['fBodyAcc-Y'] = group['tBodyAcc-Y'].apply(lambda x: np.absolute(np.fft.rfft(x))).reset_index()['tBodyAcc-Y']
@@ -1209,6 +1208,9 @@ def feature_extract():
             df_feature.append(y)
             df_feature.append(z)
             
+            # Get frequency buckets for this sampling profile
+            freqbuckets = np.fft.rfftfreq(hz*seconds, 1/hz)
+            
             # fBodyAcc-MeanFreq-1            
             # fBodyAcc-MeanFreq-2            
             # fBodyAcc-MeanFreq-3 
@@ -1219,95 +1221,110 @@ def feature_extract():
             df_feature.append(y)
             df_feature.append(z)
             
-            
-            
-            
-            
-
-
-
-            
-            
-            
-              
-                
-            
-
-                 
-            
-    
-    
-              
-            
-    
-    
-               
             # fBodyAcc-Skewness-1            
             # fBodyAcc-Kurtosis-1            
             # fBodyAcc-Skewness-2            
             # fBodyAcc-Kurtosis-2            
             # fBodyAcc-Skewness-3            
             # fBodyAcc-Kurtosis-3
-    
- 
-            '''
-            # Use this code to calculate frequency bands; commented out for the moment
-            # Energy of frequency bands
-            # create column names for bands
-            cname = ['tBodyAcc-FFT-x-%s' % i for i in np.arange(len(freqbuckets))+1]
-        
-            # Append a single-column dataframe for energy of each FFT band
-            # This fails if any groups have fewer than max(i) items in them. Fix this by 
-            for i, cn in enumerate(cname):
-                #print(i)
-                df_feature.append(pd.DataFrame(temp['tBodyAcc-FFT-x'].apply(lambda x: np.sqrt(np.square(x[i]))).rename(columns={'tBodyAcc-FFT-x':cn}).reset_index(drop=True)).rename(columns={0:cn}))
-            '''
-    
-    
-                
-            # fBodyAcc-BandsEnergyOld-1      
-            # fBodyAcc-BandsEnergyOld-2      
-            # fBodyAcc-BandsEnergyOld-3      
-            # fBodyAcc-BandsEnergyOld-4      
-            # fBodyAcc-BandsEnergyOld-5      
-            # fBodyAcc-BandsEnergyOld-6      
-            # fBodyAcc-BandsEnergyOld-7      
-            # fBodyAcc-BandsEnergyOld-8      
-            # fBodyAcc-BandsEnergyOld-9      
-            # fBodyAcc-BandsEnergyOld-10     
-            # fBodyAcc-BandsEnergyOld-11     
-            # fBodyAcc-BandsEnergyOld-12     
-            # fBodyAcc-BandsEnergyOld-13     
-            # fBodyAcc-BandsEnergyOld-14     
-            # fBodyAcc-BandsEnergyOld-15     
-            # fBodyAcc-BandsEnergyOld-16     
-            # fBodyAcc-BandsEnergyOld-17     
-            # fBodyAcc-BandsEnergyOld-18     
-            # fBodyAcc-BandsEnergyOld-19     
-            # fBodyAcc-BandsEnergyOld-20     
-            # fBodyAcc-BandsEnergyOld-21     
-            # fBodyAcc-BandsEnergyOld-22     
-            # fBodyAcc-BandsEnergyOld-23     
-            # fBodyAcc-BandsEnergyOld-24     
-            # fBodyAcc-BandsEnergyOld-25     
-            # fBodyAcc-BandsEnergyOld-26     
-            # fBodyAcc-BandsEnergyOld-27     
-            # fBodyAcc-BandsEnergyOld-28     
-            # fBodyAcc-BandsEnergyOld-29     
-            # fBodyAcc-BandsEnergyOld-30     
-            # fBodyAcc-BandsEnergyOld-31     
-            # fBodyAcc-BandsEnergyOld-32     
-            # fBodyAcc-BandsEnergyOld-33     
-            # fBodyAcc-BandsEnergyOld-34     
-            # fBodyAcc-BandsEnergyOld-35     
-            # fBodyAcc-BandsEnergyOld-36     
-            # fBodyAcc-BandsEnergyOld-37     
-            # fBodyAcc-BandsEnergyOld-38     
-            # fBodyAcc-BandsEnergyOld-39     
-            # fBodyAcc-BandsEnergyOld-40     
-            # fBodyAcc-BandsEnergyOld-41     
-            # fBodyAcc-BandsEnergyOld-42   
+            x=pd.DataFrame(df_f['fBodyAcc-X'].apply(lambda x: skew(x))).rename(columns={0:'fBodyAcc-Skewness-1'})
+            y=pd.DataFrame(df_f['fBodyAcc-Y'].apply(lambda x: skew(x))).rename(columns={0:'fBodyAcc-Skewness-2'})
+            z=pd.DataFrame(df_f['fBodyAcc-Z'].apply(lambda x: skew(x))).rename(columns={0:'fBodyAcc-Skewness-3'})
+            df_feature.append(x)  
+            df_feature.append(y)
+            df_feature.append(z)
             
+            x=pd.DataFrame(df_f['fBodyAcc-X'].apply(lambda x: kurtosis(x))).rename(columns={0:'fBodyAcc-Kurtosis-1'})
+            y=pd.DataFrame(df_f['fBodyAcc-Y'].apply(lambda x: kurtosis(x))).rename(columns={0:'fBodyAcc-Kurtosis-2'})
+            z=pd.DataFrame(df_f['fBodyAcc-Z'].apply(lambda x: kurtosis(x))).rename(columns={0:'fBodyAcc-Kurtosis-3'})
+            df_feature.append(x)  
+            df_feature.append(y)
+            df_feature.append(z)
+
+
+            # Energy of frequency bands
+            
+            #fBodyAcc-BandsEnergy-X-1
+            #fBodyAcc-BandsEnergy-X-2
+            #fBodyAcc-BandsEnergy-X-3
+            #fBodyAcc-BandsEnergy-X-4
+            #fBodyAcc-BandsEnergy-X-5
+            #fBodyAcc-BandsEnergy-X-6 
+            #fBodyAcc-BandsEnergy-X-7 
+            #fBodyAcc-BandsEnergy-X-8 
+            #fBodyAcc-BandsEnergy-X-9 
+            #fBodyAcc-BandsEnergy-X-10
+            #fBodyAcc-BandsEnergy-X-11
+            #fBodyAcc-BandsEnergy-X-12
+            #fBodyAcc-BandsEnergy-X-13
+            #fBodyAcc-BandsEnergy-X-14
+            #fBodyAcc-BandsEnergy-X-15
+            #fBodyAcc-BandsEnergy-Y-1
+            #fBodyAcc-BandsEnergy-Y-2
+            #fBodyAcc-BandsEnergy-Y-3
+            #fBodyAcc-BandsEnergy-Y-4
+            #fBodyAcc-BandsEnergy-Y-5
+            #fBodyAcc-BandsEnergy-Y-6 
+            #fBodyAcc-BandsEnergy-Y-7 
+            #fBodyAcc-BandsEnergy-Y-8 
+            #fBodyAcc-BandsEnergy-Y-9 
+            #fBodyAcc-BandsEnergy-Y-10
+            #fBodyAcc-BandsEnergy-Y-11
+            #fBodyAcc-BandsEnergy-Y-12
+            #fBodyAcc-BandsEnergy-Y-13
+            #fBodyAcc-BandsEnergy-Y-14
+            #fBodyAcc-BandsEnergy-Y-15
+            #fBodyAcc-BandsEnergy-Z-1
+            #fBodyAcc-BandsEnergy-Z-2
+            #fBodyAcc-BandsEnergy-Z-3
+            #fBodyAcc-BandsEnergy-Z-4
+            #fBodyAcc-BandsEnergy-Z-5
+            #fBodyAcc-BandsEnergy-Z-6 
+            #fBodyAcc-BandsEnergy-Z-7 
+            #fBodyAcc-BandsEnergy-Z-8 
+            #fBodyAcc-BandsEnergy-Z-9 
+            #fBodyAcc-BandsEnergy-Z-10
+            #fBodyAcc-BandsEnergy-Z-11
+            #fBodyAcc-BandsEnergy-Z-12
+            #fBodyAcc-BandsEnergy-Z-13
+            #fBodyAcc-BandsEnergy-Z-14
+            #fBodyAcc-BandsEnergy-Z-15
+            
+            '''
+            Note that since num of frequency buckets = hz*seconds/2 + 1,
+            each file may have a different number of bands available. Here
+            we split the frequency bucket list into sqrt(len(freqbuckets)))
+            separate chunks because it seems like a reasonable number, then 
+            calculate the energy of each set of bands, then pad the number 
+            of resulting columns with all-NA columns so that each data set
+            has an equivalent number of columns (for easier future processing).
+            '''
+            
+            maxbands = 15 # This is num of bands for 50hz, 10 seconds file
+            nbands = np.sqrt(len(freqbuckets))
+            if (nbands < 5):
+                nbands = len(freqbuckets) # Set better minimum number of bands
+            fbucketlist = np.array_split(freqbuckets, nbands)
+            
+            #df_feature_test = df_feature
+            
+            for var in ['X', 'Y', 'Z']:
+                incolname = 'fBodyAcc-%s' % var
+                startind = 0
+                for i in np.arange(maxbands):
+                    cname = "fBodyAcc-BandsEnergy-%s-%s" % (var, i+1)
+                    try:
+                        # If i is a valid index of fbucketlist, create column
+                        band = fbucketlist[i]
+                        bandinds = np.arange(startind, startind+len(band))
+                        print("Creating column %s" % cname)
+                        df_feature.append(pd.DataFrame(df_f[incolname].apply(lambda x: np.sqrt(sum([y**2 for y in x[bandinds]]))).rename(columns={incolname:cname}).reset_index(drop=True)).rename(columns={0:cname}))
+                        startind += len(bandinds)
+                    except:
+                        # i is not a valid index, fill column with NAN
+                        print("No more bands, filling column %s with NANs" % cname)
+                        df_feature.append(pd.DataFrame(np.full((2220, 1), fill_value=np.NAN)).rename(columns={0:cname}))
+
             
             
             # fBodyAccJerk-Mean-1            
