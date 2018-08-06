@@ -7,12 +7,17 @@ import pandas as pd
 from scipy.stats import pearsonr
 from scipy.stats import entropy
 
+#Set home directory for relative paths, comment in/out as needed
+homedir = '/Users/SM/DSI/classes/DS6999/DS6999_HAR/' #Sean's home dir
+
 # This is the directory where your hz data files are located
-path = 'F:\\DS 6999\\project\\hzData\\*.csv'
+#path = 'F:\\DS 6999\\project\\hzData\\*.csv'
+path = os.path.join(homedir, 'data', 'hzData', '*.csv')
 files = glob.glob(path)
 
 # This is the directory where you want to write the new csvs to
-os.chdir('F:\\DS 6999\\project\\FeatureData')
+#os.chdir('F:\\DS 6999\\project\\FeatureData')
+os.chdir(os.path.join(homedir, 'data', 'FeatureData'))
 
 # https://stackoverflow.com/questions/8930370/where-can-i-find-mad-mean-absolute-deviation-in-scipy
 def mad2(arr):
@@ -74,9 +79,19 @@ def feature_extract():
             # And in this case, 50 observations at 5hz = 10 seconds
             group = df_out.groupby(['experimentID',sub_index//(seconds*hz)*(seconds*hz)], as_index=False)
             group_square = pow(df_out,2).groupby(['experimentID',sub_index//(seconds*hz)*(seconds*hz)], as_index=False)
+            
+            # Filter out rows that contribute to groups of less than full size
+            # This seems to require recalculating indexes
+            grpsize = group.size().max()
+            df_out = group.filter(lambda x: len(x) >= grpsize)
+            sub_index = df_out.groupby(['experimentID']).cumcount()
+            df_out['index'] = sub_index
+            group = df_out.groupby(['experimentID',sub_index//(seconds*hz)*(seconds*hz)], as_index=False)
+            
             # Initilze the feature list, which is a list that contains several
             # dataframes. At the end all of these dataframes will be concatinated
             df_feature = [group['index','tBodyAcc-X','tBodyAcc-Y','tBodyAcc-Z','tGravityAcc-X','tGravityAcc-Y','tGravityAcc-Z','tBodyGyro-X','tBodyGyro-Y','tBodyGyro-Z','experimentID','userID','activityID'].first()]
+    
     
             # Tracks progress
             print('Window in seconds:',seconds)
