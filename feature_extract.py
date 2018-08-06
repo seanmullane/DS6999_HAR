@@ -78,8 +78,7 @@ def feature_extract():
             # 10*5=50 observations are grouped together within an experiment ID.
             # And in this case, 50 observations at 5hz = 10 seconds
             group = df_out.groupby(['experimentID',sub_index//(seconds*hz)*(seconds*hz)], as_index=False)
-            group_square = pow(df_out,2).groupby(['experimentID',sub_index//(seconds*hz)*(seconds*hz)], as_index=False)
-            
+             
             # Filter out rows that contribute to groups of less than full size
             # This seems to require recalculating indexes
             grpsize = group.size().max()
@@ -87,6 +86,7 @@ def feature_extract():
             sub_index = df_out.groupby(['experimentID']).cumcount()
             df_out['index'] = sub_index
             group = df_out.groupby(['experimentID',sub_index//(seconds*hz)*(seconds*hz)], as_index=False)
+            group_square = pow(df_out,2).groupby(['experimentID',sub_index//(seconds*hz)*(seconds*hz)], as_index=False)
             
             # Initilze the feature list, which is a list that contains several
             # dataframes. At the end all of these dataframes will be concatinated
@@ -1079,21 +1079,25 @@ def feature_extract():
             
             df_f = pd.DataFrame()
             
-            df_f['fBodyAcc-X'] = group['tBodyAcc-X'].apply(lambda x: np.real(np.fft.fft(x))).reset_index()['tBodyAcc-X']
-            df_f['fBodyAcc-Y'] = group['tBodyAcc-Y'].apply(lambda x: np.real(np.fft.fft(x))).reset_index()['tBodyAcc-Y']
-            df_f['fBodyAcc-Z'] = group['tBodyAcc-Z'].apply(lambda x: np.real(np.fft.fft(x))).reset_index()['tBodyAcc-Z']
+            # Get frequency buckets for this sampling profile
+            freqbuckets = np.fft.rfftfreq(hz*seconds, 1/hz)
             
-            df_f['fBodyAccJerk-X'] = tBodyAccJerkX.apply(lambda row: [np.real(np.fft.fft(y)) for y in row]).rename(columns={'tBodyAccJerk-X':'fBodyAccJerk-X'})
-            df_f['fBodyAccJerk-Y'] = tBodyAccJerkY.apply(lambda row: [np.real(np.fft.fft(y)) for y in row]).rename(columns={'tBodyAccJerk-Y':'fBodyAccJerk-Y'})
-            df_f['fBodyAccJerk-Z'] = tBodyAccJerkZ.apply(lambda row: [np.real(np.fft.fft(y)) for y in row]).rename(columns={'tBodyAccJerk-Z':'fBodyAccJerk-Z'})
+            # Calculate FFT of each raw column
+            df_f['fBodyAcc-X'] = group['tBodyAcc-X'].apply(lambda x: np.absolute(np.fft.rfft(x))).reset_index()['tBodyAcc-X']
+            df_f['fBodyAcc-Y'] = group['tBodyAcc-Y'].apply(lambda x: np.absolute(np.fft.rfft(x))).reset_index()['tBodyAcc-Y']
+            df_f['fBodyAcc-Z'] = group['tBodyAcc-Z'].apply(lambda x: np.absolute(np.fft.rfft(x))).reset_index()['tBodyAcc-Z']
             
-            df_f['fBodyGyro-X'] = group['tBodyGyro-X'].apply(lambda x: np.real(np.fft.fft(x))).reset_index()['tBodyGyro-X']
-            df_f['fBodyGyro-Y'] = group['tBodyGyro-Y'].apply(lambda x: np.real(np.fft.fft(x))).reset_index()['tBodyGyro-Y']
-            df_f['fBodyGyro-Z'] = group['tBodyGyro-Z'].apply(lambda x: np.real(np.fft.fft(x))).reset_index()['tBodyGyro-Z']
+            df_f['fBodyAccJerk-X'] = tBodyAccJerkX.apply(lambda row: [np.absolute(np.fft.rfft(y)) for y in row]).rename(columns={'tBodyAccJerk-X':'fBodyAccJerk-X'})
+            df_f['fBodyAccJerk-Y'] = tBodyAccJerkY.apply(lambda row: [np.absolute(np.fft.rfft(y)) for y in row]).rename(columns={'tBodyAccJerk-Y':'fBodyAccJerk-Y'})
+            df_f['fBodyAccJerk-Z'] = tBodyAccJerkZ.apply(lambda row: [np.absolute(np.fft.rfft(y)) for y in row]).rename(columns={'tBodyAccJerk-Z':'fBodyAccJerk-Z'})
+            
+            df_f['fBodyGyro-X'] = group['tBodyGyro-X'].apply(lambda x: np.absolute(np.fft.rfft(x))).reset_index()['tBodyGyro-X']
+            df_f['fBodyGyro-Y'] = group['tBodyGyro-Y'].apply(lambda x: np.absolute(np.fft.rfft(x))).reset_index()['tBodyGyro-Y']
+            df_f['fBodyGyro-Z'] = group['tBodyGyro-Z'].apply(lambda x: np.absolute(np.fft.rfft(x))).reset_index()['tBodyGyro-Z']
     
-            df_f['fBodyGyroJerk-X'] = tBodyGyroJerkX.apply(lambda row: [np.real(np.fft.fft(y)) for y in row]).rename(columns={'tBodyGyroJerk-X':'fBodyGyroJerk-X'})
-            df_f['fBodyGyroJerk-Y'] = tBodyGyroJerkY.apply(lambda row: [np.real(np.fft.fft(y)) for y in row]).rename(columns={'tBodyGyroJerk-Y':'fBodyGyroJerk-Y'})
-            df_f['fBodyGyroJerk-Z'] = tBodyGyroJerkZ.apply(lambda row: [np.real(np.fft.fft(y)) for y in row]).rename(columns={'tBodyGyroJerk-Z':'fBodyGyroJerk-Z'})
+            df_f['fBodyGyroJerk-X'] = tBodyGyroJerkX.apply(lambda row: [np.absolute(np.fft.rfft(y)) for y in row]).rename(columns={'tBodyGyroJerk-X':'fBodyGyroJerk-X'})
+            df_f['fBodyGyroJerk-Y'] = tBodyGyroJerkY.apply(lambda row: [np.absolute(np.fft.rfft(y)) for y in row]).rename(columns={'tBodyGyroJerk-Y':'fBodyGyroJerk-Y'})
+            df_f['fBodyGyroJerk-Z'] = tBodyGyroJerkZ.apply(lambda row: [np.absolute(np.fft.rfft(y)) for y in row]).rename(columns={'tBodyGyroJerk-Z':'fBodyGyroJerk-Z'})
     
             t = np.square(df_f[['fBodyAcc-X','fBodyAcc-Y','fBodyAcc-Z']])
             t = t['fBodyAcc-X']+t['fBodyAcc-Y']+t['fBodyAcc-Z']
@@ -1114,6 +1118,7 @@ def feature_extract():
             t = t['fBodyGyroJerk-X']+t['fBodyGyroJerk-Y']+t['fBodyGyroJerk-Z']
             t = t.apply(lambda row: np.sqrt(row))
             df_f['fBodyGyroJerkMag'] = pd.DataFrame(t).rename(columns={0:'fBodyGyroJerkMag'})   
+    
     
             # fBodyAcc-Mean-1                
             # fBodyAcc-Mean-2                
@@ -1149,12 +1154,12 @@ def feature_extract():
             df_feature.append(df_f[['fBodyAcc-X']].apply(lambda row: [np.min(y) for y in row]).rename(columns={'fBodyAcc-X':'fBodyAcc-Min-1'}))
             df_feature.append(df_f[['fBodyAcc-Y']].apply(lambda row: [np.min(y) for y in row]).rename(columns={'fBodyAcc-Y':'fBodyAcc-Min-2'}))
             df_feature.append(df_f[['fBodyAcc-Z']].apply(lambda row: [np.min(y) for y in row]).rename(columns={'fBodyAcc-Z':'fBodyAcc-Min-3'}))
-                   
+                 
             # fBodyAcc-SMA-1
             t = df_f[['fBodyAcc-X','fBodyAcc-Y','fBodyAcc-Z']].abs().sum(axis=1)
             t = pd.DataFrame(t.apply(lambda row: sum(row))).rename(columns={0:'fBodyAcc-SMA-1'})
             df_feature.append(t)
-                   
+            
             # fBodyAcc-Energy-1              
             # fBodyAcc-Energy-2              
             # fBodyAcc-Energy-3 
@@ -1173,7 +1178,7 @@ def feature_extract():
             b = t.apply(lambda x: [len(y) for y in x])
             t=(a/b).rename(columns={'fBodyAcc-Z':'fBodyAcc-Energy-3'})
             df_feature.append(t)
-                 
+            
             # fBodyAcc-IQR-1                 
             # fBodyAcc-IQR-2                 
             # fBodyAcc-IQR-3
@@ -1193,16 +1198,47 @@ def feature_extract():
             df_feature.append(x)  
             df_feature.append(y)
             df_feature.append(z)
-                 
+            
             # fBodyAcc-MaxInds-1             
             # fBodyAcc-MaxInds-2             
             # fBodyAcc-MaxInds-3
-    
-    
-              
+            x=pd.DataFrame(df_f['fBodyAcc-X'].apply(lambda x: np.argmax(x))).rename(columns={0:'fBodyAcc-MaxInds-1'})
+            y=pd.DataFrame(df_f['fBodyAcc-Y'].apply(lambda x: np.argmax(x))).rename(columns={0:'fBodyAcc-MaxInds-2'})
+            z=pd.DataFrame(df_f['fBodyAcc-Z'].apply(lambda x: np.argmax(x))).rename(columns={0:'fBodyAcc-MaxInds-3'})
+            df_feature.append(x)  
+            df_feature.append(y)
+            df_feature.append(z)
+            
             # fBodyAcc-MeanFreq-1            
             # fBodyAcc-MeanFreq-2            
             # fBodyAcc-MeanFreq-3 
+            x=pd.DataFrame(df_f['fBodyAcc-X'].apply(lambda x: sum([x[i]*freqbuckets[i] for i in np.arange(len(x))])/len(x))).rename(columns={0:'fBodyAcc-MeanFreq-1'})
+            y=pd.DataFrame(df_f['fBodyAcc-Y'].apply(lambda x: sum([x[i]*freqbuckets[i] for i in np.arange(len(x))])/len(x))).rename(columns={0:'fBodyAcc-MeanFreq-2'})
+            z=pd.DataFrame(df_f['fBodyAcc-Z'].apply(lambda x: sum([x[i]*freqbuckets[i] for i in np.arange(len(x))])/len(x))).rename(columns={0:'fBodyAcc-MeanFreq-3'})
+            df_feature.append(x)  
+            df_feature.append(y)
+            df_feature.append(z)
+            
+            
+            
+            
+            
+
+
+
+            
+            
+            
+              
+                
+            
+
+                 
+            
+    
+    
+              
+            
     
     
                
@@ -1212,6 +1248,20 @@ def feature_extract():
             # fBodyAcc-Kurtosis-2            
             # fBodyAcc-Skewness-3            
             # fBodyAcc-Kurtosis-3
+    
+ 
+            '''
+            # Use this code to calculate frequency bands; commented out for the moment
+            # Energy of frequency bands
+            # create column names for bands
+            cname = ['tBodyAcc-FFT-x-%s' % i for i in np.arange(len(freqbuckets))+1]
+        
+            # Append a single-column dataframe for energy of each FFT band
+            # This fails if any groups have fewer than max(i) items in them. Fix this by 
+            for i, cn in enumerate(cname):
+                #print(i)
+                df_feature.append(pd.DataFrame(temp['tBodyAcc-FFT-x'].apply(lambda x: np.sqrt(np.square(x[i]))).rename(columns={'tBodyAcc-FFT-x':cn}).reset_index(drop=True)).rename(columns={0:cn}))
+            '''
     
     
                 
