@@ -43,14 +43,14 @@ def feature_extract():
         print(ct, "/", 4, name)
     
         # Set the value of hz based on the name of the file
-        if name==files[0]:
-            hz = 5
-        elif name==files[1]:
-            hz = 10
-        elif name==files[2]:
-            hz = 25
-        else:
+        if '50hz' in name:
             hz = 50
+        elif '25hz' in name:
+            hz = 25
+        elif '10hz' in name:
+            hz = 10
+        else:
+            hz = 5
         
         # Read the csv
         df=pd.DataFrame.from_csv(name, sep='\t')

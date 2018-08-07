@@ -22,6 +22,9 @@ def split_scale():
         df=pd.DataFrame.from_csv(name, sep='\t')
         # Remove all entries where there is no activity id (Y value)
         df=df[df['activityID']!=0]
+        # Drop all empty cols then rows
+        df=df.dropna(how='all')
+        df=df.dropna(axis=1)
         # Drop all raw data columns. Leave all features.
         # Separate the features (X variables) from the Y variable
         df_X=df.drop(columns=['activityID','experimentID','index',
@@ -29,9 +32,8 @@ def split_scale():
                          'tBodyGyro-X','tBodyGyro-Y','tBodyGyro-Z',
                          'tGravityAcc-X','tGravityAcc-Y','tGravityAcc-Z',
                          'userID',
-                         'fBodyAcc-X','fBodyAcc-Y','fBodyAcc-Z',
                          
-                         # Here are values which go into extremes/are bad
+                         # Here are values which go into extremes (-inf)
                          'tBodyAcc-ropy-1','tBodyAcc-ropy-2','tBodyAcc-ropy-3',
                          'tBodyAccJerk-ropy-1','tBodyAccJerk-ropy-2','tBodyAccJerk-ropy-3',
                          'tBodyGyro-ropy-1','tBodyGyro-ropy-2','tBodyGyro-ropy-3',
@@ -40,6 +42,8 @@ def split_scale():
                          'tGravityAcc-ropy-1','tGravityAcc-ropy-2','tGravityAcc-ropy-3'
                          ])
         
+
+    
         # Here's a diagnostic function that shows which values are invalid
         # diag=a.isin([np.nan,np.inf,-np.inf]).apply(lambda x: sum(x))
         
