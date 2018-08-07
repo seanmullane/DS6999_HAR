@@ -11,15 +11,16 @@ from scipy.stats import kurtosis
 
 #Set home directory for relative paths, comment in/out as needed
 homedir = '/Users/SM/DSI/classes/DS6999/DS6999_HAR/' #Sean's home dir
+homedir = 'F:\\DS 6999\\project' # Tommy's home dir
 
 # This is the directory where your hz data files are located
-#path = 'F:\\DS 6999\\project\\hzData\\*.csv'
-path = os.path.join(homedir, 'data', 'hzData', '*.csv')
+path = 'F:\\DS 6999\\project\\hzData\\*.csv'
+#path = os.path.join(homedir, 'data', 'hzData', '*.csv')
 files = glob.glob(path)
 
 # This is the directory where you want to write the new csvs to
-#os.chdir('F:\\DS 6999\\project\\FeatureData')
-os.chdir(os.path.join(homedir, 'data', 'FeatureData'))
+os.chdir('F:\\DS 6999\\project\\FeatureData')
+#os.chdir(os.path.join(homedir, 'data', 'FeatureData'))
 
 # https://stackoverflow.com/questions/8930370/where-can-i-find-mad-mean-absolute-deviation-in-scipy
 def mad2(arr):
@@ -1117,8 +1118,7 @@ def feature_extract():
             t = t['fBodyGyroJerk-X']+t['fBodyGyroJerk-Y']+t['fBodyGyroJerk-Z']
             t = t.apply(lambda row: np.sqrt(row))
             df_f['fBodyGyroJerkMag'] = pd.DataFrame(t).rename(columns={0:'fBodyGyroJerkMag'})   
-    
-    
+      
             # fBodyAcc-Mean-1                
             # fBodyAcc-Mean-2                
             # fBodyAcc-Mean-3  
@@ -1191,9 +1191,9 @@ def feature_extract():
             # fBodyAcc-ropy-1                
             # fBodyAcc-ropy-1                
             # fBodyAcc-ropy-1   
-            x=pd.DataFrame(df_f['fBodyAcc-X'].apply(lambda row: entropy(row))).rename(columns={0:'fBodyAcc-ropy-1'})
-            y=pd.DataFrame(df_f['fBodyAcc-Y'].apply(lambda row: entropy(row))).rename(columns={0:'fBodyAcc-ropy-2'})
-            z=pd.DataFrame(df_f['fBodyAcc-Z'].apply(lambda row: entropy(row))).rename(columns={0:'fBodyAcc-ropy-3'})
+            x=pd.DataFrame(df_f['fBodyAcc-X'].apply(lambda row: entropy(row))).rename(columns={'fBodyAcc-X':'fBodyAcc-ropy-1'})
+            y=pd.DataFrame(df_f['fBodyAcc-Y'].apply(lambda row: entropy(row))).rename(columns={'fBodyAcc-Y':'fBodyAcc-ropy-2'})
+            z=pd.DataFrame(df_f['fBodyAcc-Z'].apply(lambda row: entropy(row))).rename(columns={'fBodyAcc-Z':'fBodyAcc-ropy-3'})
             df_feature.append(x)  
             df_feature.append(y)
             df_feature.append(z)
@@ -1201,9 +1201,9 @@ def feature_extract():
             # fBodyAcc-MaxInds-1             
             # fBodyAcc-MaxInds-2             
             # fBodyAcc-MaxInds-3
-            x=pd.DataFrame(df_f['fBodyAcc-X'].apply(lambda x: np.argmax(x))).rename(columns={0:'fBodyAcc-MaxInds-1'})
-            y=pd.DataFrame(df_f['fBodyAcc-Y'].apply(lambda x: np.argmax(x))).rename(columns={0:'fBodyAcc-MaxInds-2'})
-            z=pd.DataFrame(df_f['fBodyAcc-Z'].apply(lambda x: np.argmax(x))).rename(columns={0:'fBodyAcc-MaxInds-3'})
+            x=pd.DataFrame(df_f['fBodyAcc-X'].apply(lambda x: np.argmax(x))).rename(columns={'fBodyAcc-X':'fBodyAcc-MaxInds-1'})
+            y=pd.DataFrame(df_f['fBodyAcc-Y'].apply(lambda x: np.argmax(x))).rename(columns={'fBodyAcc-Y':'fBodyAcc-MaxInds-2'})
+            z=pd.DataFrame(df_f['fBodyAcc-Z'].apply(lambda x: np.argmax(x))).rename(columns={'fBodyAcc-Z':'fBodyAcc-MaxInds-3'})
             df_feature.append(x)  
             df_feature.append(y)
             df_feature.append(z)
@@ -1214,9 +1214,9 @@ def feature_extract():
             # fBodyAcc-MeanFreq-1            
             # fBodyAcc-MeanFreq-2            
             # fBodyAcc-MeanFreq-3 
-            x=pd.DataFrame(df_f['fBodyAcc-X'].apply(lambda x: sum([x[i]*freqbuckets[i] for i in np.arange(len(x))])/len(x))).rename(columns={0:'fBodyAcc-MeanFreq-1'})
-            y=pd.DataFrame(df_f['fBodyAcc-Y'].apply(lambda x: sum([x[i]*freqbuckets[i] for i in np.arange(len(x))])/len(x))).rename(columns={0:'fBodyAcc-MeanFreq-2'})
-            z=pd.DataFrame(df_f['fBodyAcc-Z'].apply(lambda x: sum([x[i]*freqbuckets[i] for i in np.arange(len(x))])/len(x))).rename(columns={0:'fBodyAcc-MeanFreq-3'})
+            x=pd.DataFrame(df_f['fBodyAcc-X'].apply(lambda x: sum([x[i]*freqbuckets[i] for i in np.arange(len(x))])/len(x))).rename(columns={'fBodyAcc-X':'fBodyAcc-MeanFreq-1'})
+            y=pd.DataFrame(df_f['fBodyAcc-Y'].apply(lambda x: sum([x[i]*freqbuckets[i] for i in np.arange(len(x))])/len(x))).rename(columns={'fBodyAcc-Y':'fBodyAcc-MeanFreq-2'})
+            z=pd.DataFrame(df_f['fBodyAcc-Z'].apply(lambda x: sum([x[i]*freqbuckets[i] for i in np.arange(len(x))])/len(x))).rename(columns={'fBodyAcc-Z':'fBodyAcc-MeanFreq-3'})
             df_feature.append(x)  
             df_feature.append(y)
             df_feature.append(z)
@@ -1227,20 +1227,19 @@ def feature_extract():
             # fBodyAcc-Kurtosis-2            
             # fBodyAcc-Skewness-3            
             # fBodyAcc-Kurtosis-3
-            x=pd.DataFrame(df_f['fBodyAcc-X'].apply(lambda x: skew(x))).rename(columns={0:'fBodyAcc-Skewness-1'})
-            y=pd.DataFrame(df_f['fBodyAcc-Y'].apply(lambda x: skew(x))).rename(columns={0:'fBodyAcc-Skewness-2'})
-            z=pd.DataFrame(df_f['fBodyAcc-Z'].apply(lambda x: skew(x))).rename(columns={0:'fBodyAcc-Skewness-3'})
+            x=pd.DataFrame(df_f['fBodyAcc-X'].apply(lambda x: skew(x))).rename(columns={'fBodyAcc-X':'fBodyAcc-Skewness-1'})
+            y=pd.DataFrame(df_f['fBodyAcc-Y'].apply(lambda x: skew(x))).rename(columns={'fBodyAcc-Y':'fBodyAcc-Skewness-2'})
+            z=pd.DataFrame(df_f['fBodyAcc-Z'].apply(lambda x: skew(x))).rename(columns={'fBodyAcc-Z':'fBodyAcc-Skewness-3'})
             df_feature.append(x)  
             df_feature.append(y)
             df_feature.append(z)
             
-            x=pd.DataFrame(df_f['fBodyAcc-X'].apply(lambda x: kurtosis(x))).rename(columns={0:'fBodyAcc-Kurtosis-1'})
-            y=pd.DataFrame(df_f['fBodyAcc-Y'].apply(lambda x: kurtosis(x))).rename(columns={0:'fBodyAcc-Kurtosis-2'})
-            z=pd.DataFrame(df_f['fBodyAcc-Z'].apply(lambda x: kurtosis(x))).rename(columns={0:'fBodyAcc-Kurtosis-3'})
+            x=pd.DataFrame(df_f['fBodyAcc-X'].apply(lambda x: kurtosis(x))).rename(columns={'fBodyAcc-X':'fBodyAcc-Kurtosis-1'})
+            y=pd.DataFrame(df_f['fBodyAcc-Y'].apply(lambda x: kurtosis(x))).rename(columns={'fBodyAcc-Y':'fBodyAcc-Kurtosis-2'})
+            z=pd.DataFrame(df_f['fBodyAcc-Z'].apply(lambda x: kurtosis(x))).rename(columns={'fBodyAcc-Z':'fBodyAcc-Kurtosis-3'})
             df_feature.append(x)  
             df_feature.append(y)
             df_feature.append(z)
-
 
             # Energy of frequency bands
             
@@ -1324,293 +1323,628 @@ def feature_extract():
                         # i is not a valid index, fill column with NAN
                         print("No more bands, filling column %s with NANs" % cname)
                         df_feature.append(pd.DataFrame(np.full((2220, 1), fill_value=np.NAN)).rename(columns={0:cname}))
-
-            
-            
-            # fBodyAccJerk-Mean-1            
-            # fBodyAccJerk-Mean-2            
-            # fBodyAccJerk-Mean-3            
-            # fBodyAccJerk-STD-1             
-            # fBodyAccJerk-STD-2             
-            # fBodyAccJerk-STD-3             
-            # fBodyAccJerk-Mad-1             
-            # fBodyAccJerk-Mad-2             
-            # fBodyAccJerk-Mad-3             
-            # fBodyAccJerk-Max-1             
-            # fBodyAccJerk-Max-2             
-            # fBodyAccJerk-Max-3             
-            # fBodyAccJerk-Min-1             
-            # fBodyAccJerk-Min-2             
-            # fBodyAccJerk-Min-3             
-            # fBodyAccJerk-SMA-1             
-            # fBodyAccJerk-Energy-1          
-            # fBodyAccJerk-Energy-2          
-            # fBodyAccJerk-Energy-3          
-            # fBodyAccJerk-IQR-1             
-            # fBodyAccJerk-IQR-2             
-            # fBodyAccJerk-IQR-3             
-            # fBodyAccJerk-ropy-1            
-            # fBodyAccJerk-ropy-1            
-            # fBodyAccJerk-ropy-1
+                
+            # fBodyAccJerk-Mean-1                
+            # fBodyAccJerk-Mean-2                
+            # fBodyAccJerk-Mean-3  
+            df_feature.append(df_f[['fBodyAccJerk-X']].apply(lambda row: [np.mean(y) for y in row]).rename(columns={'fBodyAccJerk-X':'fBodyAccJerk-Mean-1'}))
+            df_feature.append(df_f[['fBodyAccJerk-Y']].apply(lambda row: [np.mean(y) for y in row]).rename(columns={'fBodyAccJerk-Y':'fBodyAccJerk-Mean-2'}))
+            df_feature.append(df_f[['fBodyAccJerk-Z']].apply(lambda row: [np.mean(y) for y in row]).rename(columns={'fBodyAccJerk-Z':'fBodyAccJerk-Mean-3'}))
     
-    # Not sure how to approach this part
-            
-    #        # fBodyAccJerk-Mean-1                
-    #        # fBodyAccJerk-Mean-2                
-    #        # fBodyAccJerk-Mean-3  
-    #        df_feature.append(df_f[['fBodyAccJerk-X']].apply(lambda row: [np.mean(y) for y in row]).rename(columns={'fBodyAccJerk-X':'fBodyAccJerk-Mean-1'}))
-    #        df_feature.append(df_f[['fBodyAccJerk-Y']].apply(lambda row: [np.mean(y) for y in row]).rename(columns={'fBodyAccJerk-Y':'fBodyAccJerk-Mean-2'}))
-    #        df_feature.append(df_f[['fBodyAccJerk-Z']].apply(lambda row: [np.mean(y) for y in row]).rename(columns={'fBodyAccJerk-Z':'fBodyAccJerk-Mean-3'}))
-    #
-    #        # fBodyAccJerk-STD-1                 
-    #        # fBodyAccJerk-STD-2                 
-    #        # fBodyAccJerk-STD-3
-    #        df_feature.append(df_f[['fBodyAccJerk-X']].apply(lambda row: [np.std(y) for y in row]).rename(columns={'fBodyAccJerk-X':'fBodyAccJerk-STD-1'}))
-    #        df_feature.append(df_f[['fBodyAccJerk-Y']].apply(lambda row: [np.std(y) for y in row]).rename(columns={'fBodyAccJerk-Y':'fBodyAccJerk-STD-2'}))
-    #        df_feature.append(df_f[['fBodyAccJerk-Z']].apply(lambda row: [np.std(y) for y in row]).rename(columns={'fBodyAccJerk-Z':'fBodyAccJerk-STD-3'}))
-    #
-    #        # fBodyAccJerk-Mad-1                 
-    #        # fBodyAccJerk-Mad-2                 
-    #        # fBodyAccJerk-Mad-3
-    #        df_feature.append(df_f[['fBodyAccJerk-X']].apply(lambda row: [mad2(y) for y in row]).rename(columns={'fBodyAccJerk-X':'fBodyAccJerk-Mad-1'}))
-    #        df_feature.append(df_f[['fBodyAccJerk-Y']].apply(lambda row: [mad2(y) for y in row]).rename(columns={'fBodyAccJerk-Y':'fBodyAccJerk-Mad-2'}))
-    #        df_feature.append(df_f[['fBodyAccJerk-Z']].apply(lambda row: [mad2(y) for y in row]).rename(columns={'fBodyAccJerk-Z':'fBodyAccJerk-Mad-3'}))
-    #
-    #        # fBodyAccJerk-Max-1                 
-    #        # fBodyAccJerk-Max-2                 
-    #        # fBodyAccJerk-Max-3                 
-    #        df_feature.append(df_f[['fBodyAccJerk-X']].apply(lambda row: [np.max(y) for y in row]).rename(columns={'fBodyAccJerk-X':'fBodyAccJerk-Max-1'}))
-    #        df_feature.append(df_f[['fBodyAccJerk-Y']].apply(lambda row: [np.max(y) for y in row]).rename(columns={'fBodyAccJerk-Y':'fBodyAccJerk-Max-2'}))
-    #        df_feature.append(df_f[['fBodyAccJerk-Z']].apply(lambda row: [np.max(y) for y in row]).rename(columns={'fBodyAccJerk-Z':'fBodyAccJerk-Max-3'}))
-    #
-    #        # fBodyAccJerk-Min-1                 
-    #        # fBodyAccJerk-Min-2                 
-    #        # fBodyAccJerk-Min-3
-    #        df_feature.append(df_f[['fBodyAccJerk-X']].apply(lambda row: [np.min(y) for y in row]).rename(columns={'fBodyAccJerk-X':'fBodyAccJerk-Min-1'}))
-    #        df_feature.append(df_f[['fBodyAccJerk-Y']].apply(lambda row: [np.min(y) for y in row]).rename(columns={'fBodyAccJerk-Y':'fBodyAccJerk-Min-2'}))
-    #        df_feature.append(df_f[['fBodyAccJerk-Z']].apply(lambda row: [np.min(y) for y in row]).rename(columns={'fBodyAccJerk-Z':'fBodyAccJerk-Min-3'}))
-    #               
+            # fBodyAccJerk-STD-1                 
+            # fBodyAccJerk-STD-2                 
+            # fBodyAccJerk-STD-3
+            df_feature.append(df_f[['fBodyAccJerk-X']].apply(lambda row: [np.std(y) for y in row]).rename(columns={'fBodyAccJerk-X':'fBodyAccJerk-STD-1'}))
+            df_feature.append(df_f[['fBodyAccJerk-Y']].apply(lambda row: [np.std(y) for y in row]).rename(columns={'fBodyAccJerk-Y':'fBodyAccJerk-STD-2'}))
+            df_feature.append(df_f[['fBodyAccJerk-Z']].apply(lambda row: [np.std(y) for y in row]).rename(columns={'fBodyAccJerk-Z':'fBodyAccJerk-STD-3'}))
+    
+            # fBodyAccJerk-Mad-1                 
+            # fBodyAccJerk-Mad-2                 
+            # fBodyAccJerk-Mad-3
+            df_feature.append(df_f[['fBodyAccJerk-X']].apply(lambda row: [mad2(y) for y in row]).rename(columns={'fBodyAccJerk-X':'fBodyAccJerk-Mad-1'}))
+            df_feature.append(df_f[['fBodyAccJerk-Y']].apply(lambda row: [mad2(y) for y in row]).rename(columns={'fBodyAccJerk-Y':'fBodyAccJerk-Mad-2'}))
+            df_feature.append(df_f[['fBodyAccJerk-Z']].apply(lambda row: [mad2(y) for y in row]).rename(columns={'fBodyAccJerk-Z':'fBodyAccJerk-Mad-3'}))
+    
+            # fBodyAccJerk-Max-1                 
+            # fBodyAccJerk-Max-2                 
+            # fBodyAccJerk-Max-3                 
+            df_feature.append(df_f[['fBodyAccJerk-X']].apply(lambda row: [np.max(y) for y in row]).rename(columns={'fBodyAccJerk-X':'fBodyAccJerk-Max-1'}))
+            df_feature.append(df_f[['fBodyAccJerk-Y']].apply(lambda row: [np.max(y) for y in row]).rename(columns={'fBodyAccJerk-Y':'fBodyAccJerk-Max-2'}))
+            df_feature.append(df_f[['fBodyAccJerk-Z']].apply(lambda row: [np.max(y) for y in row]).rename(columns={'fBodyAccJerk-Z':'fBodyAccJerk-Max-3'}))
+    
+            # fBodyAccJerk-Min-1                 
+            # fBodyAccJerk-Min-2                 
+            # fBodyAccJerk-Min-3
+            df_feature.append(df_f[['fBodyAccJerk-X']].apply(lambda row: [np.min(y) for y in row]).rename(columns={'fBodyAccJerk-X':'fBodyAccJerk-Min-1'}))
+            df_feature.append(df_f[['fBodyAccJerk-Y']].apply(lambda row: [np.min(y) for y in row]).rename(columns={'fBodyAccJerk-Y':'fBodyAccJerk-Min-2'}))
+            df_feature.append(df_f[['fBodyAccJerk-Z']].apply(lambda row: [np.min(y) for y in row]).rename(columns={'fBodyAccJerk-Z':'fBodyAccJerk-Min-3'}))
+                   
             # fBodyAccJerk-SMA-1
-    
+            t = df_f[['fBodyAccJerk-X','fBodyAccJerk-Y','fBodyAccJerk-Z']].abs().sum(axis=1)
+            t = pd.DataFrame(t.apply(lambda row: sum(row))).rename(columns={0:'fBodyAccJerk-SMA-1'})
+            df_feature.append(t)
                    
             # fBodyAccJerk-Energy-1              
             # fBodyAccJerk-Energy-2              
             # fBodyAccJerk-Energy-3 
-    
-                 
+            t = np.square(df_f[['fBodyAccJerk-X']])
+            a = t.apply(lambda row: [sum(y) for y in row])
+            b = t.apply(lambda x: [len(y) for y in x])
+            t=(a/b).rename(columns={'fBodyAccJerk-X':'fBodyAccJerk-Energy-1'})
+            df_feature.append(t)
+            t = np.square(df_f[['fBodyAccJerk-Y']])
+            a = t.apply(lambda row: [sum(y) for y in row])
+            b = t.apply(lambda x: [len(y) for y in x])
+            t=(a/b).rename(columns={'fBodyAccJerk-Y':'fBodyAccJerk-Energy-2'})
+            df_feature.append(t)
+            t = np.square(df_f[['fBodyAccJerk-Z']])
+            a = t.apply(lambda row: [sum(y) for y in row])
+            b = t.apply(lambda x: [len(y) for y in x])
+            t=(a/b).rename(columns={'fBodyAccJerk-Z':'fBodyAccJerk-Energy-3'})
+            df_feature.append(t)
+            
             # fBodyAccJerk-IQR-1                 
             # fBodyAccJerk-IQR-2                 
             # fBodyAccJerk-IQR-3
-    
+            x=df_f['fBodyAccJerk-X'].apply(lambda row: pd.DataFrame(row).quantile(0.75)-pd.DataFrame(row).quantile(0.25)).rename(columns={0:'fBodyAccJerk-IQR-1'})
+            y=df_f['fBodyAccJerk-Y'].apply(lambda row: pd.DataFrame(row).quantile(0.75)-pd.DataFrame(row).quantile(0.25)).rename(columns={0:'fBodyAccJerk-IQR-2'})
+            z=df_f['fBodyAccJerk-Z'].apply(lambda row: pd.DataFrame(row).quantile(0.75)-pd.DataFrame(row).quantile(0.25)).rename(columns={0:'fBodyAccJerk-IQR-3'})
+            df_feature.append(x)  
+            df_feature.append(y)
+            df_feature.append(z)
             
             # fBodyAccJerk-ropy-1                
             # fBodyAccJerk-ropy-1                
             # fBodyAccJerk-ropy-1   
+            x=pd.DataFrame(df_f['fBodyAccJerk-X'].apply(lambda row: entropy(row))).rename(columns={'fBodyAccJerk-X':'fBodyAccJerk-ropy-1'})
+            y=pd.DataFrame(df_f['fBodyAccJerk-Y'].apply(lambda row: entropy(row))).rename(columns={'fBodyAccJerk-Y':'fBodyAccJerk-ropy-2'})
+            z=pd.DataFrame(df_f['fBodyAccJerk-Z'].apply(lambda row: entropy(row))).rename(columns={'fBodyAccJerk-Z':'fBodyAccJerk-ropy-3'})
+            df_feature.append(x)  
+            df_feature.append(y)
+            df_feature.append(z)
     
+            # fBodyAccJerk-MaxInds-1             
+            # fBodyAccJerk-MaxInds-2             
+            # fBodyAccJerk-MaxInds-3
+            x=pd.DataFrame(df_f['fBodyAccJerk-X'].apply(lambda x: np.argmax(x))).rename(columns={'fBodyAccJerk-X':'fBodyAccJerk-MaxInds-1'})
+            y=pd.DataFrame(df_f['fBodyAccJerk-Y'].apply(lambda x: np.argmax(x))).rename(columns={'fBodyAccJerk-Y':'fBodyAccJerk-MaxInds-2'})
+            z=pd.DataFrame(df_f['fBodyAccJerk-Z'].apply(lambda x: np.argmax(x))).rename(columns={'fBodyAccJerk-Z':'fBodyAccJerk-MaxInds-3'})
+            df_feature.append(x)  
+            df_feature.append(y)
+            df_feature.append(z)
+            
+            # Get frequency buckets for this sampling profile
+            freqbuckets = np.fft.rfftfreq(hz*seconds, 1/hz)
+            
+            # fBodyAccJerk-MeanFreq-1            
+            # fBodyAccJerk-MeanFreq-2            
+            # fBodyAccJerk-MeanFreq-3 
+            x=pd.DataFrame(df_f['fBodyAccJerk-X'].apply(lambda x: sum([x[i]*freqbuckets[i] for i in np.arange(len(x))])/len(x))).rename(columns={'fBodyAccJerk-X':'fBodyAccJerk-MeanFreq-1'})
+            y=pd.DataFrame(df_f['fBodyAccJerk-Y'].apply(lambda x: sum([x[i]*freqbuckets[i] for i in np.arange(len(x))])/len(x))).rename(columns={'fBodyAccJerk-Y':'fBodyAccJerk-MeanFreq-2'})
+            z=pd.DataFrame(df_f['fBodyAccJerk-Z'].apply(lambda x: sum([x[i]*freqbuckets[i] for i in np.arange(len(x))])/len(x))).rename(columns={'fBodyAccJerk-Z':'fBodyAccJerk-MeanFreq-3'})
+            df_feature.append(x)  
+            df_feature.append(y)
+            df_feature.append(z)
+            
+            # fBodyAccJerk-Skewness-1            
+            # fBodyAccJerk-Kurtosis-1            
+            # fBodyAccJerk-Skewness-2            
+            # fBodyAccJerk-Kurtosis-2            
+            # fBodyAccJerk-Skewness-3            
+            # fBodyAccJerk-Kurtosis-3
+            x=pd.DataFrame(df_f['fBodyAccJerk-X'].apply(lambda x: skew(x))).rename(columns={'fBodyAccJerk-X':'fBodyAccJerk-Skewness-1'})
+            y=pd.DataFrame(df_f['fBodyAccJerk-Y'].apply(lambda x: skew(x))).rename(columns={'fBodyAccJerk-Y':'fBodyAccJerk-Skewness-2'})
+            z=pd.DataFrame(df_f['fBodyAccJerk-Z'].apply(lambda x: skew(x))).rename(columns={'fBodyAccJerk-Z':'fBodyAccJerk-Skewness-3'})
+            df_feature.append(x)  
+            df_feature.append(y)
+            df_feature.append(z)
+            
+            x=pd.DataFrame(df_f['fBodyAccJerk-X'].apply(lambda x: kurtosis(x))).rename(columns={'fBodyAccJerk-X':'fBodyAccJerk-Kurtosis-1'})
+            y=pd.DataFrame(df_f['fBodyAccJerk-Y'].apply(lambda x: kurtosis(x))).rename(columns={'fBodyAccJerk-Y':'fBodyAccJerk-Kurtosis-2'})
+            z=pd.DataFrame(df_f['fBodyAccJerk-Z'].apply(lambda x: kurtosis(x))).rename(columns={'fBodyAccJerk-Z':'fBodyAccJerk-Kurtosis-3'})
+            df_feature.append(x)  
+            df_feature.append(y)
+            df_feature.append(z)
+            
+            #fBodyAccJerk-BandsEnergy-X-1
+            #fBodyAccJerk-BandsEnergy-X-2
+            #fBodyAccJerk-BandsEnergy-X-3
+            #fBodyAccJerk-BandsEnergy-X-4
+            #fBodyAccJerk-BandsEnergy-X-5
+            #fBodyAccJerk-BandsEnergy-X-6 
+            #fBodyAccJerk-BandsEnergy-X-7 
+            #fBodyAccJerk-BandsEnergy-X-8 
+            #fBodyAccJerk-BandsEnergy-X-9 
+            #fBodyAccJerk-BandsEnergy-X-10
+            #fBodyAccJerk-BandsEnergy-X-11
+            #fBodyAccJerk-BandsEnergy-X-12
+            #fBodyAccJerk-BandsEnergy-X-13
+            #fBodyAccJerk-BandsEnergy-X-14
+            #fBodyAccJerk-BandsEnergy-X-15
+            #fBodyAccJerk-BandsEnergy-Y-1
+            #fBodyAccJerk-BandsEnergy-Y-2
+            #fBodyAccJerk-BandsEnergy-Y-3
+            #fBodyAccJerk-BandsEnergy-Y-4
+            #fBodyAccJerk-BandsEnergy-Y-5
+            #fBodyAccJerk-BandsEnergy-Y-6 
+            #fBodyAccJerk-BandsEnergy-Y-7 
+            #fBodyAccJerk-BandsEnergy-Y-8 
+            #fBodyAccJerk-BandsEnergy-Y-9 
+            #fBodyAccJerk-BandsEnergy-Y-10
+            #fBodyAccJerk-BandsEnergy-Y-11
+            #fBodyAccJerk-BandsEnergy-Y-12
+            #fBodyAccJerk-BandsEnergy-Y-13
+            #fBodyAccJerk-BandsEnergy-Y-14
+            #fBodyAccJerk-BandsEnergy-Y-15
+            #fBodyAccJerk-BandsEnergy-Z-1
+            #fBodyAccJerk-BandsEnergy-Z-2
+            #fBodyAccJerk-BandsEnergy-Z-3
+            #fBodyAccJerk-BandsEnergy-Z-4
+            #fBodyAccJerk-BandsEnergy-Z-5
+            #fBodyAccJerk-BandsEnergy-Z-6 
+            #fBodyAccJerk-BandsEnergy-Z-7 
+            #fBodyAccJerk-BandsEnergy-Z-8 
+            #fBodyAccJerk-BandsEnergy-Z-9 
+            #fBodyAccJerk-BandsEnergy-Z-10
+            #fBodyAccJerk-BandsEnergy-Z-11
+            #fBodyAccJerk-BandsEnergy-Z-12
+            #fBodyAccJerk-BandsEnergy-Z-13
+            #fBodyAccJerk-BandsEnergy-Z-14
+            #fBodyAccJerk-BandsEnergy-Z-15
+            
+            maxbands = 15 # This is num of bands for 50hz, 10 seconds file
+            nbands = np.sqrt(len(freqbuckets))
+            if (nbands < 5):
+                nbands = len(freqbuckets) # Set better minimum number of bands
+            fbucketlist = np.array_split(freqbuckets, nbands)
+            
+            #df_feature_test = df_feature
+            
+            for var in ['X', 'Y', 'Z']:
+                incolname = 'fBodyAccJerk-%s' % var
+                startind = 0
+                for i in np.arange(maxbands):
+                    cname = "fBodyAccJerk-BandsEnergy-%s-%s" % (var, i+1)
+                    try:
+                        # If i is a valid index of fbucketlist, create column
+                        band = fbucketlist[i]
+                        bandinds = np.arange(startind, startind+len(band))
+                        print("Creating column %s" % cname)
+                        df_feature.append(pd.DataFrame(df_f[incolname].apply(lambda x: np.sqrt(sum([y**2 for y in x[bandinds]]))).rename(columns={incolname:cname}).reset_index(drop=True)).rename(columns={0:cname}))
+                        startind += len(bandinds)
+                    except:
+                        # i is not a valid index, fill column with NAN
+                        print("No more bands, filling column %s with NANs" % cname)
+                        df_feature.append(pd.DataFrame(np.full((2220, 1), fill_value=np.NAN)).rename(columns={0:cname}))
+            
+            # fBodyGyro-Mean-1                
+            # fBodyGyro-Mean-2                
+            # fBodyGyro-Mean-3  
+            df_feature.append(df_f[['fBodyGyro-X']].apply(lambda row: [np.mean(y) for y in row]).rename(columns={'fBodyGyro-X':'fBodyGyro-Mean-1'}))
+            df_feature.append(df_f[['fBodyGyro-Y']].apply(lambda row: [np.mean(y) for y in row]).rename(columns={'fBodyGyro-Y':'fBodyGyro-Mean-2'}))
+            df_feature.append(df_f[['fBodyGyro-Z']].apply(lambda row: [np.mean(y) for y in row]).rename(columns={'fBodyGyro-Z':'fBodyGyro-Mean-3'}))
     
-      
-            # fBodyAccJerk-MaxInds-1         
-            # fBodyAccJerk-MaxInds-2         
-            # fBodyAccJerk-MaxInds-3         
-            # fBodyAccJerk-MeanFreq-1        
-            # fBodyAccJerk-MeanFreq-2        
-            # fBodyAccJerk-MeanFreq-3        
-            # fBodyAccJerk-Skewness-1        
-            # fBodyAccJerk-Kurtosis-1        
-            # fBodyAccJerk-Skewness-1        
-            # fBodyAccJerk-Kurtosis-1        
-            # fBodyAccJerk-Skewness-1        
-            # fBodyAccJerk-Kurtosis-1        
-            # fBodyAccJerk-BandsEnergyOld-1  
-            # fBodyAccJerk-BandsEnergyOld-2  
-            # fBodyAccJerk-BandsEnergyOld-3  
-            # fBodyAccJerk-BandsEnergyOld-4  
-            # fBodyAccJerk-BandsEnergyOld-5  
-            # fBodyAccJerk-BandsEnergyOld-6  
-            # fBodyAccJerk-BandsEnergyOld-7  
-            # fBodyAccJerk-BandsEnergyOld-8  
-            # fBodyAccJerk-BandsEnergyOld-9  
-            # fBodyAccJerk-BandsEnergyOld-10 
-            # fBodyAccJerk-BandsEnergyOld-11 
-            # fBodyAccJerk-BandsEnergyOld-12 
-            # fBodyAccJerk-BandsEnergyOld-13 
-            # fBodyAccJerk-BandsEnergyOld-14 
-            # fBodyAccJerk-BandsEnergyOld-15 
-            # fBodyAccJerk-BandsEnergyOld-16 
-            # fBodyAccJerk-BandsEnergyOld-17 
-            # fBodyAccJerk-BandsEnergyOld-18 
-            # fBodyAccJerk-BandsEnergyOld-19 
-            # fBodyAccJerk-BandsEnergyOld-20 
-            # fBodyAccJerk-BandsEnergyOld-21 
-            # fBodyAccJerk-BandsEnergyOld-22 
-            # fBodyAccJerk-BandsEnergyOld-23 
-            # fBodyAccJerk-BandsEnergyOld-24 
-            # fBodyAccJerk-BandsEnergyOld-25 
-            # fBodyAccJerk-BandsEnergyOld-26 
-            # fBodyAccJerk-BandsEnergyOld-27 
-            # fBodyAccJerk-BandsEnergyOld-28 
-            # fBodyAccJerk-BandsEnergyOld-29 
-            # fBodyAccJerk-BandsEnergyOld-30 
-            # fBodyAccJerk-BandsEnergyOld-31 
-            # fBodyAccJerk-BandsEnergyOld-32 
-            # fBodyAccJerk-BandsEnergyOld-33 
-            # fBodyAccJerk-BandsEnergyOld-34 
-            # fBodyAccJerk-BandsEnergyOld-35 
-            # fBodyAccJerk-BandsEnergyOld-36 
-            # fBodyAccJerk-BandsEnergyOld-37 
-            # fBodyAccJerk-BandsEnergyOld-38 
-            # fBodyAccJerk-BandsEnergyOld-39 
-            # fBodyAccJerk-BandsEnergyOld-40 
-            # fBodyAccJerk-BandsEnergyOld-41 
-            # fBodyAccJerk-BandsEnergyOld-42 
+            # fBodyGyro-STD-1                 
+            # fBodyGyro-STD-2                 
+            # fBodyGyro-STD-3
+            df_feature.append(df_f[['fBodyGyro-X']].apply(lambda row: [np.std(y) for y in row]).rename(columns={'fBodyGyro-X':'fBodyGyro-STD-1'}))
+            df_feature.append(df_f[['fBodyGyro-Y']].apply(lambda row: [np.std(y) for y in row]).rename(columns={'fBodyGyro-Y':'fBodyGyro-STD-2'}))
+            df_feature.append(df_f[['fBodyGyro-Z']].apply(lambda row: [np.std(y) for y in row]).rename(columns={'fBodyGyro-Z':'fBodyGyro-STD-3'}))
+    
+            # fBodyGyro-Mad-1                 
+            # fBodyGyro-Mad-2                 
+            # fBodyGyro-Mad-3
+            df_feature.append(df_f[['fBodyGyro-X']].apply(lambda row: [mad2(y) for y in row]).rename(columns={'fBodyGyro-X':'fBodyGyro-Mad-1'}))
+            df_feature.append(df_f[['fBodyGyro-Y']].apply(lambda row: [mad2(y) for y in row]).rename(columns={'fBodyGyro-Y':'fBodyGyro-Mad-2'}))
+            df_feature.append(df_f[['fBodyGyro-Z']].apply(lambda row: [mad2(y) for y in row]).rename(columns={'fBodyGyro-Z':'fBodyGyro-Mad-3'}))
+    
+            # fBodyGyro-Max-1                 
+            # fBodyGyro-Max-2                 
+            # fBodyGyro-Max-3                 
+            df_feature.append(df_f[['fBodyGyro-X']].apply(lambda row: [np.max(y) for y in row]).rename(columns={'fBodyGyro-X':'fBodyGyro-Max-1'}))
+            df_feature.append(df_f[['fBodyGyro-Y']].apply(lambda row: [np.max(y) for y in row]).rename(columns={'fBodyGyro-Y':'fBodyGyro-Max-2'}))
+            df_feature.append(df_f[['fBodyGyro-Z']].apply(lambda row: [np.max(y) for y in row]).rename(columns={'fBodyGyro-Z':'fBodyGyro-Max-3'}))
+    
+            # fBodyGyro-Min-1                 
+            # fBodyGyro-Min-2                 
+            # fBodyGyro-Min-3
+            df_feature.append(df_f[['fBodyGyro-X']].apply(lambda row: [np.min(y) for y in row]).rename(columns={'fBodyGyro-X':'fBodyGyro-Min-1'}))
+            df_feature.append(df_f[['fBodyGyro-Y']].apply(lambda row: [np.min(y) for y in row]).rename(columns={'fBodyGyro-Y':'fBodyGyro-Min-2'}))
+            df_feature.append(df_f[['fBodyGyro-Z']].apply(lambda row: [np.min(y) for y in row]).rename(columns={'fBodyGyro-Z':'fBodyGyro-Min-3'}))
+                 
+            # fBodyGyro-SMA-1
+            t = df_f[['fBodyGyro-X','fBodyGyro-Y','fBodyGyro-Z']].abs().sum(axis=1)
+            t = pd.DataFrame(t.apply(lambda row: sum(row))).rename(columns={0:'fBodyGyro-SMA-1'})
+            df_feature.append(t)
             
+            # fBodyGyro-Energy-1              
+            # fBodyGyro-Energy-2              
+            # fBodyGyro-Energy-3 
+            t = np.square(df_f[['fBodyGyro-X']])
+            a = t.apply(lambda row: [sum(y) for y in row])
+            b = t.apply(lambda x: [len(y) for y in x])
+            t=(a/b).rename(columns={'fBodyGyro-X':'fBodyGyro-Energy-1'})
+            df_feature.append(t)
+            t = np.square(df_f[['fBodyGyro-Y']])
+            a = t.apply(lambda row: [sum(y) for y in row])
+            b = t.apply(lambda x: [len(y) for y in x])
+            t=(a/b).rename(columns={'fBodyGyro-Y':'fBodyGyro-Energy-2'})
+            df_feature.append(t)
+            t = np.square(df_f[['fBodyGyro-Z']])
+            a = t.apply(lambda row: [sum(y) for y in row])
+            b = t.apply(lambda x: [len(y) for y in x])
+            t=(a/b).rename(columns={'fBodyGyro-Z':'fBodyGyro-Energy-3'})
+            df_feature.append(t)
             
+            # fBodyGyro-IQR-1                 
+            # fBodyGyro-IQR-2                 
+            # fBodyGyro-IQR-3
+            x=df_f['fBodyGyro-X'].apply(lambda row: pd.DataFrame(row).quantile(0.75)-pd.DataFrame(row).quantile(0.25)).rename(columns={0:'fBodyGyro-IQR-1'})
+            y=df_f['fBodyGyro-Y'].apply(lambda row: pd.DataFrame(row).quantile(0.75)-pd.DataFrame(row).quantile(0.25)).rename(columns={0:'fBodyGyro-IQR-2'})
+            z=df_f['fBodyGyro-Z'].apply(lambda row: pd.DataFrame(row).quantile(0.75)-pd.DataFrame(row).quantile(0.25)).rename(columns={0:'fBodyGyro-IQR-3'})
+            df_feature.append(x)  
+            df_feature.append(y)
+            df_feature.append(z)
             
-            # fBodyGyro-Mean-1               
-            # fBodyGyro-Mean-2               
-            # fBodyGyro-Mean-3               
-            # fBodyGyro-STD-1                
-            # fBodyGyro-STD-2                
-            # fBodyGyro-STD-3                
-            # fBodyGyro-Mad-1                
-            # fBodyGyro-Mad-2                
-            # fBodyGyro-Mad-3                
-            # fBodyGyro-Max-1                
-            # fBodyGyro-Max-2                
-            # fBodyGyro-Max-3                
-            # fBodyGyro-Min-1                
-            # fBodyGyro-Min-2                
-            # fBodyGyro-Min-3                
-            # fBodyGyro-SMA-1                
-            # fBodyGyro-Energy-1             
-            # fBodyGyro-Energy-2             
-            # fBodyGyro-Energy-3             
-            # fBodyGyro-IQR-1                
-            # fBodyGyro-IQR-2                
-            # fBodyGyro-IQR-3                
-            # fBodyGyro-ropy-1               
-            # fBodyGyro-ropy-1               
-            # fBodyGyro-ropy-1               
-            # fBodyGyro-MaxInds-1            
-            # fBodyGyro-MaxInds-2            
-            # fBodyGyro-MaxInds-3            
-            # fBodyGyro-MeanFreq-1           
-            # fBodyGyro-MeanFreq-2           
-            # fBodyGyro-MeanFreq-3           
-            # fBodyGyro-Skewness-1           
-            # fBodyGyro-Kurtosis-1           
-            # fBodyGyro-Skewness-1           
-            # fBodyGyro-Kurtosis-1           
-            # fBodyGyro-Skewness-1           
-            # fBodyGyro-Kurtosis-1           
-            # fBodyGyro-BandsEnergyOld-1     
-            # fBodyGyro-BandsEnergyOld-2     
-            # fBodyGyro-BandsEnergyOld-3     
-            # fBodyGyro-BandsEnergyOld-4     
-            # fBodyGyro-BandsEnergyOld-5     
-            # fBodyGyro-BandsEnergyOld-6     
-            # fBodyGyro-BandsEnergyOld-7     
-            # fBodyGyro-BandsEnergyOld-8     
-            # fBodyGyro-BandsEnergyOld-9     
-            # fBodyGyro-BandsEnergyOld-10    
-            # fBodyGyro-BandsEnergyOld-11    
-            # fBodyGyro-BandsEnergyOld-12    
-            # fBodyGyro-BandsEnergyOld-13    
-            # fBodyGyro-BandsEnergyOld-14    
-            # fBodyGyro-BandsEnergyOld-15    
-            # fBodyGyro-BandsEnergyOld-16    
-            # fBodyGyro-BandsEnergyOld-17    
-            # fBodyGyro-BandsEnergyOld-18    
-            # fBodyGyro-BandsEnergyOld-19    
-            # fBodyGyro-BandsEnergyOld-20    
-            # fBodyGyro-BandsEnergyOld-21    
-            # fBodyGyro-BandsEnergyOld-22    
-            # fBodyGyro-BandsEnergyOld-23    
-            # fBodyGyro-BandsEnergyOld-24    
-            # fBodyGyro-BandsEnergyOld-25    
-            # fBodyGyro-BandsEnergyOld-26    
-            # fBodyGyro-BandsEnergyOld-27    
-            # fBodyGyro-BandsEnergyOld-28    
-            # fBodyGyro-BandsEnergyOld-29    
-            # fBodyGyro-BandsEnergyOld-30    
-            # fBodyGyro-BandsEnergyOld-31    
-            # fBodyGyro-BandsEnergyOld-32    
-            # fBodyGyro-BandsEnergyOld-33    
-            # fBodyGyro-BandsEnergyOld-34    
-            # fBodyGyro-BandsEnergyOld-35    
-            # fBodyGyro-BandsEnergyOld-36    
-            # fBodyGyro-BandsEnergyOld-37    
-            # fBodyGyro-BandsEnergyOld-38    
-            # fBodyGyro-BandsEnergyOld-39    
-            # fBodyGyro-BandsEnergyOld-40    
-            # fBodyGyro-BandsEnergyOld-41    
-            # fBodyGyro-BandsEnergyOld-42  
+            # fBodyGyro-ropy-1                
+            # fBodyGyro-ropy-1                
+            # fBodyGyro-ropy-1   
+            x=pd.DataFrame(df_f['fBodyGyro-X'].apply(lambda row: entropy(row))).rename(columns={0:'fBodyGyro-ropy-1'})
+            y=pd.DataFrame(df_f['fBodyGyro-Y'].apply(lambda row: entropy(row))).rename(columns={0:'fBodyGyro-ropy-2'})
+            z=pd.DataFrame(df_f['fBodyGyro-Z'].apply(lambda row: entropy(row))).rename(columns={0:'fBodyGyro-ropy-3'})
+            df_feature.append(x)  
+            df_feature.append(y)
+            df_feature.append(z)
             
+            # fBodyGyro-MaxInds-1             
+            # fBodyGyro-MaxInds-2             
+            # fBodyGyro-MaxInds-3
+            x=pd.DataFrame(df_f['fBodyGyro-X'].apply(lambda x: np.argmax(x))).rename(columns={'fBodyGyro-X':'fBodyGyro-MaxInds-1'})
+            y=pd.DataFrame(df_f['fBodyGyro-Y'].apply(lambda x: np.argmax(x))).rename(columns={'fBodyGyro-Y':'fBodyGyro-MaxInds-2'})
+            z=pd.DataFrame(df_f['fBodyGyro-Z'].apply(lambda x: np.argmax(x))).rename(columns={'fBodyGyro-Z':'fBodyGyro-MaxInds-3'})
+            df_feature.append(x)  
+            df_feature.append(y)
+            df_feature.append(z)
             
+            # Get frequency buckets for this sampling profile
+            freqbuckets = np.fft.rfftfreq(hz*seconds, 1/hz)
             
-            # fBodyAccMag-Mean-1             
-            # fBodyAccMag-STD-1              
-            # fBodyAccMag-Mad-1              
-            # fBodyAccMag-Max-1              
-            # fBodyAccMag-Min-1              
-            # fBodyAccMag-SMA-1              
-            # fBodyAccMag-Energy-1           
-            # fBodyAccMag-IQR-1              
-            # fBodyAccMag-ropy-1             
-            # fBodyAccMag-MaxInds-1          
-            # fBodyAccMag-MeanFreq-1         
-            # fBodyAccMag-Skewness-1         
-            # fBodyAccMag-Kurtosis-1  
+            # fBodyGyro-MeanFreq-1            
+            # fBodyGyro-MeanFreq-2            
+            # fBodyGyro-MeanFreq-3 
+            x=pd.DataFrame(df_f['fBodyGyro-X'].apply(lambda x: sum([x[i]*freqbuckets[i] for i in np.arange(len(x))])/len(x))).rename(columns={'fBodyGyro-X':'fBodyGyro-MeanFreq-1'})
+            y=pd.DataFrame(df_f['fBodyGyro-Y'].apply(lambda x: sum([x[i]*freqbuckets[i] for i in np.arange(len(x))])/len(x))).rename(columns={'fBodyGyro-Y':'fBodyGyro-MeanFreq-2'})
+            z=pd.DataFrame(df_f['fBodyGyro-Z'].apply(lambda x: sum([x[i]*freqbuckets[i] for i in np.arange(len(x))])/len(x))).rename(columns={'fBodyGyro-Z':'fBodyGyro-MeanFreq-3'})
+            df_feature.append(x)  
+            df_feature.append(y)
+            df_feature.append(z)
             
+            # fBodyGyro-Skewness-1            
+            # fBodyGyro-Kurtosis-1            
+            # fBodyGyro-Skewness-2            
+            # fBodyGyro-Kurtosis-2            
+            # fBodyGyro-Skewness-3            
+            # fBodyGyro-Kurtosis-3
+            x=pd.DataFrame(df_f['fBodyGyro-X'].apply(lambda x: skew(x))).rename(columns={'fBodyGyro-X':'fBodyGyro-Skewness-1'})
+            y=pd.DataFrame(df_f['fBodyGyro-Y'].apply(lambda x: skew(x))).rename(columns={'fBodyGyro-Y':'fBodyGyro-Skewness-2'})
+            z=pd.DataFrame(df_f['fBodyGyro-Z'].apply(lambda x: skew(x))).rename(columns={'fBodyGyro-Z':'fBodyGyro-Skewness-3'})
+            df_feature.append(x)  
+            df_feature.append(y)
+            df_feature.append(z)
             
+            x=pd.DataFrame(df_f['fBodyGyro-X'].apply(lambda x: kurtosis(x))).rename(columns={'fBodyGyro-X':'fBodyGyro-Kurtosis-1'})
+            y=pd.DataFrame(df_f['fBodyGyro-Y'].apply(lambda x: kurtosis(x))).rename(columns={'fBodyGyro-Y':'fBodyGyro-Kurtosis-2'})
+            z=pd.DataFrame(df_f['fBodyGyro-Z'].apply(lambda x: kurtosis(x))).rename(columns={'fBodyGyro-Z':'fBodyGyro-Kurtosis-3'})
+            df_feature.append(x)  
+            df_feature.append(y)
+            df_feature.append(z)
+
+            # Energy of frequency bands
             
-            # fBodyAccJerkMag-Mean-1         
-            # fBodyAccJerkMag-STD-1          
-            # fBodyAccJerkMag-Mad-1          
-            # fBodyAccJerkMag-Max-1          
-            # fBodyAccJerkMag-Min-1          
-            # fBodyAccJerkMag-SMA-1          
-            # fBodyAccJerkMag-Energy-1       
-            # fBodyAccJerkMag-IQR-1          
-            # fBodyAccJerkMag-ropy-1         
-            # fBodyAccJerkMag-MaxInds-1      
-            # fBodyAccJerkMag-MeanFreq-1     
-            # fBodyAccJerkMag-Skewness-1     
-            # fBodyAccJerkMag-Kurtosis-1  
+            #fBodyGyro-BandsEnergy-X-1
+            #fBodyGyro-BandsEnergy-X-2
+            #fBodyGyro-BandsEnergy-X-3
+            #fBodyGyro-BandsEnergy-X-4
+            #fBodyGyro-BandsEnergy-X-5
+            #fBodyGyro-BandsEnergy-X-6 
+            #fBodyGyro-BandsEnergy-X-7 
+            #fBodyGyro-BandsEnergy-X-8 
+            #fBodyGyro-BandsEnergy-X-9 
+            #fBodyGyro-BandsEnergy-X-10
+            #fBodyGyro-BandsEnergy-X-11
+            #fBodyGyro-BandsEnergy-X-12
+            #fBodyGyro-BandsEnergy-X-13
+            #fBodyGyro-BandsEnergy-X-14
+            #fBodyGyro-BandsEnergy-X-15
+            #fBodyGyro-BandsEnergy-Y-1
+            #fBodyGyro-BandsEnergy-Y-2
+            #fBodyGyro-BandsEnergy-Y-3
+            #fBodyGyro-BandsEnergy-Y-4
+            #fBodyGyro-BandsEnergy-Y-5
+            #fBodyGyro-BandsEnergy-Y-6 
+            #fBodyGyro-BandsEnergy-Y-7 
+            #fBodyGyro-BandsEnergy-Y-8 
+            #fBodyGyro-BandsEnergy-Y-9 
+            #fBodyGyro-BandsEnergy-Y-10
+            #fBodyGyro-BandsEnergy-Y-11
+            #fBodyGyro-BandsEnergy-Y-12
+            #fBodyGyro-BandsEnergy-Y-13
+            #fBodyGyro-BandsEnergy-Y-14
+            #fBodyGyro-BandsEnergy-Y-15
+            #fBodyGyro-BandsEnergy-Z-1
+            #fBodyGyro-BandsEnergy-Z-2
+            #fBodyGyro-BandsEnergy-Z-3
+            #fBodyGyro-BandsEnergy-Z-4
+            #fBodyGyro-BandsEnergy-Z-5
+            #fBodyGyro-BandsEnergy-Z-6 
+            #fBodyGyro-BandsEnergy-Z-7 
+            #fBodyGyro-BandsEnergy-Z-8 
+            #fBodyGyro-BandsEnergy-Z-9 
+            #fBodyGyro-BandsEnergy-Z-10
+            #fBodyGyro-BandsEnergy-Z-11
+            #fBodyGyro-BandsEnergy-Z-12
+            #fBodyGyro-BandsEnergy-Z-13
+            #fBodyGyro-BandsEnergy-Z-14
+            #fBodyGyro-BandsEnergy-Z-15
             
+            '''
+            Note that since num of frequency buckets = hz*seconds/2 + 1,
+            each file may have a different number of bands available. Here
+            we split the frequency bucket list into sqrt(len(freqbuckets)))
+            separate chunks because it seems like a reasonable number, then 
+            calculate the energy of each set of bands, then pad the number 
+            of resulting columns with all-NA columns so that each data set
+            has an equivalent number of columns (for easier future processing).
+            '''
             
+            maxbands = 15 # This is num of bands for 50hz, 10 seconds file
+            nbands = np.sqrt(len(freqbuckets))
+            if (nbands < 5):
+                nbands = len(freqbuckets) # Set better minimum number of bands
+            fbucketlist = np.array_split(freqbuckets, nbands)
             
-            # fBodyGyroMag-Mean-1            
-            # fBodyGyroMag-STD-1             
-            # fBodyGyroMag-Mad-1             
-            # fBodyGyroMag-Max-1             
-            # fBodyGyroMag-Min-1             
-            # fBodyGyroMag-SMA-1             
-            # fBodyGyroMag-Energy-1          
-            # fBodyGyroMag-IQR-1             
-            # fBodyGyroMag-ropy-1            
-            # fBodyGyroMag-MaxInds-1         
-            # fBodyGyroMag-MeanFreq-1        
-            # fBodyGyroMag-Skewness-1        
-            # fBodyGyroMag-Kurtosis-1   
+            #df_feature_test = df_feature
             
+            for var in ['X', 'Y', 'Z']:
+                incolname = 'fBodyGyro-%s' % var
+                startind = 0
+                for i in np.arange(maxbands):
+                    cname = "fBodyGyro-BandsEnergy-%s-%s" % (var, i+1)
+                    try:
+                        # If i is a valid index of fbucketlist, create column
+                        band = fbucketlist[i]
+                        bandinds = np.arange(startind, startind+len(band))
+                        print("Creating column %s" % cname)
+                        df_feature.append(pd.DataFrame(df_f[incolname].apply(lambda x: np.sqrt(sum([y**2 for y in x[bandinds]]))).rename(columns={incolname:cname}).reset_index(drop=True)).rename(columns={0:cname}))
+                        startind += len(bandinds)
+                    except:
+                        # i is not a valid index, fill column with NAN
+                        print("No more bands, filling column %s with NANs" % cname)
+                        df_feature.append(pd.DataFrame(np.full((2220, 1), fill_value=np.NAN)).rename(columns={0:cname}))
             
+            # fBodyAccMag-Mean-1                
+            df_feature.append(df_f[['fBodyAccMag']].apply(lambda row: [np.mean(y) for y in row]).rename(columns={'fBodyAccMag':'fBodyAccMag-Mean-1'}))
+    
+            # fBodyAccMag-STD-1                 
+            df_feature.append(df_f[['fBodyAccMag']].apply(lambda row: [np.std(y) for y in row]).rename(columns={'fBodyAccMag':'fBodyAccMag-STD-1'}))
+    
+            # fBodyAccMag-Mad-1                 
+            df_feature.append(df_f[['fBodyAccMag']].apply(lambda row: [mad2(y) for y in row]).rename(columns={'fBodyAccMag':'fBodyAccMag-Mad-1'}))
+    
+            # fBodyAccMag-Max-1                               
+            df_feature.append(df_f[['fBodyAccMag']].apply(lambda row: [np.max(y) for y in row]).rename(columns={'fBodyAccMag':'fBodyAccMag-Max-1'}))
+    
+            # fBodyAccMag-Min-1                 
+            df_feature.append(df_f[['fBodyAccMag']].apply(lambda row: [np.min(y) for y in row]).rename(columns={'fBodyAccMag':'fBodyAccMag-Min-1'}))
+                 
+            # fBodyAccMag-SMA-1
+            t = df_f[['fBodyAccMag']].abs().sum(axis=1)
+            t = pd.DataFrame(t.apply(lambda row: sum(row))).rename(columns={0:'fBodyAccMag-SMA-1'})
+            df_feature.append(t)
             
-            # fBodyGyroJerkMag-Mean-1        
-            # fBodyGyroJerkMag-STD-1         
-            # fBodyGyroJerkMag-Mad-1         
-            # fBodyGyroJerkMag-Max-1         
-            # fBodyGyroJerkMag-Min-1         
-            # fBodyGyroJerkMag-SMA-1         
-            # fBodyGyroJerkMag-Energy-1      
-            # fBodyGyroJerkMag-IQR-1         
-            # fBodyGyroJerkMag-ropy-1        
-            # fBodyGyroJerkMag-MaxInds-1     
-            # fBodyGyroJerkMag-MeanFreq-1    
-            # fBodyGyroJerkMag-Skewness-1    
-            # fBodyGyroJerkMag-Kurtosis-1   
+            # fBodyAccMag-Energy-1              
+            t = np.square(df_f[['fBodyAccMag']])
+            a = t.apply(lambda row: [sum(y) for y in row])
+            b = t.apply(lambda x: [len(y) for y in x])
+            t=(a/b).rename(columns={'fBodyAccMag':'fBodyAccMag-Energy-1'})
+            df_feature.append(t)
             
+            # fBodyAccMag-IQR-1                 
+            x=df_f['fBodyAccMag'].apply(lambda row: pd.DataFrame(row).quantile(0.75)-pd.DataFrame(row).quantile(0.25)).rename(columns={0:'fBodyAccMag-IQR-1'})
+            df_feature.append(x)  
             
+            # fBodyAccMag-ropy-1                 
+            x=pd.DataFrame(df_f['fBodyAccMag'].apply(lambda row: entropy(row))).rename(columns={'fBodyAccMag':'fBodyAccMag-ropy-1'})
+            df_feature.append(x)  
+
+            # fBodyAccMag-MaxInds-1             
+            x=pd.DataFrame(df_f['fBodyAccMag'].apply(lambda x: np.argmax(x))).rename(columns={'fBodyAccMag':'fBodyAccMag-MaxInds-1'})
+            df_feature.append(x)  
+
+            # Get frequency buckets for this sampling profile
+            freqbuckets = np.fft.rfftfreq(hz*seconds, 1/hz)
+            
+            # fBodyAccMag-MeanFreq-1            
+            # fBodyAccMag-MeanFreq-2            
+            # fBodyAccMag-MeanFreq-3 
+            x=pd.DataFrame(df_f['fBodyAccMag'].apply(lambda x: sum([x[i]*freqbuckets[i] for i in np.arange(len(x))])/len(x))).rename(columns={'fBodyAccMag':'fBodyAccMag-MeanFreq-1'})
+            df_feature.append(x)
+            
+            # fBodyAccMag-Skewness-1            
+            # fBodyAccMag-Kurtosis-1            
+            x=pd.DataFrame(df_f['fBodyAccMag'].apply(lambda x: skew(x))).rename(columns={'fBodyAccMag':'fBodyAccMag-Skewness-1'})
+            df_feature.append(x)  
+            
+            x=pd.DataFrame(df_f['fBodyAccMag'].apply(lambda x: kurtosis(x))).rename(columns={'fBodyAccMag':'fBodyAccMag-Kurtosis-1'})
+            df_feature.append(x)  
+                     
+            # fBodyAccJerkMag-Mean-1                
+            df_feature.append(df_f[['fBodyAccJerkMag']].apply(lambda row: [np.mean(y) for y in row]).rename(columns={'fBodyAccJerkMag':'fBodyAccJerkMag-Mean-1'}))
+    
+            # fBodyAccJerkMag-STD-1                 
+            df_feature.append(df_f[['fBodyAccJerkMag']].apply(lambda row: [np.std(y) for y in row]).rename(columns={'fBodyAccJerkMag':'fBodyAccJerkMag-STD-1'}))
+    
+            # fBodyAccJerkMag-Mad-1                 
+            df_feature.append(df_f[['fBodyAccJerkMag']].apply(lambda row: [mad2(y) for y in row]).rename(columns={'fBodyAccJerkMag':'fBodyAccJerkMag-Mad-1'}))
+    
+            # fBodyAccJerkMag-Max-1                               
+            df_feature.append(df_f[['fBodyAccJerkMag']].apply(lambda row: [np.max(y) for y in row]).rename(columns={'fBodyAccJerkMag':'fBodyAccJerkMag-Max-1'}))
+    
+            # fBodyAccJerkMag-Min-1                 
+            df_feature.append(df_f[['fBodyAccJerkMag']].apply(lambda row: [np.min(y) for y in row]).rename(columns={'fBodyAccJerkMag':'fBodyAccJerkMag-Min-1'}))
+                 
+            # fBodyAccJerkMag-SMA-1
+            t = df_f[['fBodyAccJerkMag']].abs().sum(axis=1)
+            t = pd.DataFrame(t.apply(lambda row: sum(row))).rename(columns={0:'fBodyAccJerkMag-SMA-1'})
+            df_feature.append(t)
+            
+            # fBodyAccJerkMag-Energy-1              
+            t = np.square(df_f[['fBodyAccJerkMag']])
+            a = t.apply(lambda row: [sum(y) for y in row])
+            b = t.apply(lambda x: [len(y) for y in x])
+            t=(a/b).rename(columns={'fBodyAccJerkMag':'fBodyAccJerkMag-Energy-1'})
+            df_feature.append(t)
+            
+            # fBodyAccJerkMag-IQR-1                 
+            x=df_f['fBodyAccJerkMag'].apply(lambda row: pd.DataFrame(row).quantile(0.75)-pd.DataFrame(row).quantile(0.25)).rename(columns={0:'fBodyAccJerkMag-IQR-1'})
+            df_feature.append(x)  
+            
+            # fBodyAccJerkMag-ropy-1                 
+            x=pd.DataFrame(df_f['fBodyAccJerkMag'].apply(lambda row: entropy(row))).rename(columns={'fBodyAccJerkMag':'fBodyAccJerkMag-ropy-1'})
+            df_feature.append(x)  
+
+            # fBodyAccJerkMag-MaxInds-1             
+            x=pd.DataFrame(df_f['fBodyAccJerkMag'].apply(lambda x: np.argmax(x))).rename(columns={'fBodyAccJerkMag':'fBodyAccJerkMag-MaxInds-1'})
+            df_feature.append(x)  
+
+            # Get frequency buckets for this sampling profile
+            freqbuckets = np.fft.rfftfreq(hz*seconds, 1/hz)
+            
+            # fBodyAccJerkMag-MeanFreq-1            
+            # fBodyAccJerkMag-MeanFreq-2            
+            # fBodyAccJerkMag-MeanFreq-3 
+            x=pd.DataFrame(df_f['fBodyAccJerkMag'].apply(lambda x: sum([x[i]*freqbuckets[i] for i in np.arange(len(x))])/len(x))).rename(columns={'fBodyAccJerkMag':'fBodyAccJerkMag-MeanFreq-1'})
+            df_feature.append(x)
+            
+            # fBodyAccJerkMag-Skewness-1            
+            # fBodyAccJerkMag-Kurtosis-1            
+            x=pd.DataFrame(df_f['fBodyAccJerkMag'].apply(lambda x: skew(x))).rename(columns={'fBodyAccJerkMag':'fBodyAccJerkMag-Skewness-1'})
+            df_feature.append(x)  
+            
+            x=pd.DataFrame(df_f['fBodyAccJerkMag'].apply(lambda x: kurtosis(x))).rename(columns={'fBodyAccJerkMag':'fBodyAccJerkMag-Kurtosis-1'})
+            df_feature.append(x)  
+            
+            # fBodyGyroMag-Mean-1                
+            df_feature.append(df_f[['fBodyGyroMag']].apply(lambda row: [np.mean(y) for y in row]).rename(columns={'fBodyGyroMag':'fBodyGyroMag-Mean-1'}))
+    
+            # fBodyGyroMag-STD-1                 
+            df_feature.append(df_f[['fBodyGyroMag']].apply(lambda row: [np.std(y) for y in row]).rename(columns={'fBodyGyroMag':'fBodyGyroMag-STD-1'}))
+    
+            # fBodyGyroMag-Mad-1                 
+            df_feature.append(df_f[['fBodyGyroMag']].apply(lambda row: [mad2(y) for y in row]).rename(columns={'fBodyGyroMag':'fBodyGyroMag-Mad-1'}))
+    
+            # fBodyGyroMag-Max-1                               
+            df_feature.append(df_f[['fBodyGyroMag']].apply(lambda row: [np.max(y) for y in row]).rename(columns={'fBodyGyroMag':'fBodyGyroMag-Max-1'}))
+    
+            # fBodyGyroMag-Min-1                 
+            df_feature.append(df_f[['fBodyGyroMag']].apply(lambda row: [np.min(y) for y in row]).rename(columns={'fBodyGyroMag':'fBodyGyroMag-Min-1'}))
+                 
+            # fBodyGyroMag-SMA-1
+            t = df_f[['fBodyGyroMag']].abs().sum(axis=1)
+            t = pd.DataFrame(t.apply(lambda row: sum(row))).rename(columns={0:'fBodyGyroMag-SMA-1'})
+            df_feature.append(t)
+            
+            # fBodyGyroMag-Energy-1              
+            t = np.square(df_f[['fBodyGyroMag']])
+            a = t.apply(lambda row: [sum(y) for y in row])
+            b = t.apply(lambda x: [len(y) for y in x])
+            t=(a/b).rename(columns={'fBodyGyroMag':'fBodyGyroMag-Energy-1'})
+            df_feature.append(t)
+            
+            # fBodyGyroMag-IQR-1                 
+            x=df_f['fBodyGyroMag'].apply(lambda row: pd.DataFrame(row).quantile(0.75)-pd.DataFrame(row).quantile(0.25)).rename(columns={0:'fBodyGyroMag-IQR-1'})
+            df_feature.append(x)  
+            
+            # fBodyGyroMag-ropy-1                 
+            x=pd.DataFrame(df_f['fBodyGyroMag'].apply(lambda row: entropy(row))).rename(columns={'fBodyGyroMag':'fBodyGyroMag-ropy-1'})
+            df_feature.append(x)  
+
+            # fBodyGyroMag-MaxInds-1             
+            x=pd.DataFrame(df_f['fBodyGyroMag'].apply(lambda x: np.argmax(x))).rename(columns={'fBodyGyroMag':'fBodyGyroMag-MaxInds-1'})
+            df_feature.append(x)  
+
+            # Get frequency buckets for this sampling profile
+            freqbuckets = np.fft.rfftfreq(hz*seconds, 1/hz)
+            
+            # fBodyGyroMag-MeanFreq-1            
+            # fBodyGyroMag-MeanFreq-2            
+            # fBodyGyroMag-MeanFreq-3 
+            x=pd.DataFrame(df_f['fBodyGyroMag'].apply(lambda x: sum([x[i]*freqbuckets[i] for i in np.arange(len(x))])/len(x))).rename(columns={'fBodyGyroMag':'fBodyGyroMag-MeanFreq-1'})
+            df_feature.append(x)
+            
+            # fBodyGyroMag-Skewness-1            
+            # fBodyGyroMag-Kurtosis-1            
+            x=pd.DataFrame(df_f['fBodyGyroMag'].apply(lambda x: skew(x))).rename(columns={'fBodyGyroMag':'fBodyGyroMag-Skewness-1'})
+            df_feature.append(x)  
+            
+            x=pd.DataFrame(df_f['fBodyGyroMag'].apply(lambda x: kurtosis(x))).rename(columns={'fBodyGyroMag':'fBodyGyroMag-Kurtosis-1'})
+            df_feature.append(x)   
+            
+            # fBodyGyroJerkMag-Mean-1                
+            df_feature.append(df_f[['fBodyGyroJerkMag']].apply(lambda row: [np.mean(y) for y in row]).rename(columns={'fBodyGyroJerkMag':'fBodyGyroJerkMag-Mean-1'}))
+    
+            # fBodyGyroJerkMag-STD-1                 
+            df_feature.append(df_f[['fBodyGyroJerkMag']].apply(lambda row: [np.std(y) for y in row]).rename(columns={'fBodyGyroJerkMag':'fBodyGyroJerkMag-STD-1'}))
+    
+            # fBodyGyroJerkMag-Mad-1                 
+            df_feature.append(df_f[['fBodyGyroJerkMag']].apply(lambda row: [mad2(y) for y in row]).rename(columns={'fBodyGyroJerkMag':'fBodyGyroJerkMag-Mad-1'}))
+    
+            # fBodyGyroJerkMag-Max-1                               
+            df_feature.append(df_f[['fBodyGyroJerkMag']].apply(lambda row: [np.max(y) for y in row]).rename(columns={'fBodyGyroJerkMag':'fBodyGyroJerkMag-Max-1'}))
+    
+            # fBodyGyroJerkMag-Min-1                 
+            df_feature.append(df_f[['fBodyGyroJerkMag']].apply(lambda row: [np.min(y) for y in row]).rename(columns={'fBodyGyroJerkMag':'fBodyGyroJerkMag-Min-1'}))
+                 
+            # fBodyGyroJerkMag-SMA-1
+            t = df_f[['fBodyGyroJerkMag']].abs().sum(axis=1)
+            t = pd.DataFrame(t.apply(lambda row: sum(row))).rename(columns={0:'fBodyGyroJerkMag-SMA-1'})
+            df_feature.append(t)
+            
+            # fBodyGyroJerkMag-Energy-1              
+            t = np.square(df_f[['fBodyGyroJerkMag']])
+            a = t.apply(lambda row: [sum(y) for y in row])
+            b = t.apply(lambda x: [len(y) for y in x])
+            t=(a/b).rename(columns={'fBodyGyroJerkMag':'fBodyGyroJerkMag-Energy-1'})
+            df_feature.append(t)
+            
+            # fBodyGyroJerkMag-IQR-1                 
+            x=df_f['fBodyGyroJerkMag'].apply(lambda row: pd.DataFrame(row).quantile(0.75)-pd.DataFrame(row).quantile(0.25)).rename(columns={0:'fBodyGyroJerkMag-IQR-1'})
+            df_feature.append(x)  
+            
+            # fBodyGyroJerkMag-ropy-1                 
+            x=pd.DataFrame(df_f['fBodyGyroJerkMag'].apply(lambda row: entropy(row))).rename(columns={'fBodyGyroJerkMag':'fBodyGyroJerkMag-ropy-1'})
+            df_feature.append(x)  
+
+            # fBodyGyroJerkMag-MaxInds-1             
+            x=pd.DataFrame(df_f['fBodyGyroJerkMag'].apply(lambda x: np.argmax(x))).rename(columns={'fBodyGyroJerkMag':'fBodyGyroJerkMag-MaxInds-1'})
+            df_feature.append(x)  
+
+            # Get frequency buckets for this sampling profile
+            freqbuckets = np.fft.rfftfreq(hz*seconds, 1/hz)
+            
+            # fBodyGyroJerkMag-MeanFreq-1            
+            # fBodyGyroJerkMag-MeanFreq-2            
+            # fBodyGyroJerkMag-MeanFreq-3 
+            x=pd.DataFrame(df_f['fBodyGyroJerkMag'].apply(lambda x: sum([x[i]*freqbuckets[i] for i in np.arange(len(x))])/len(x))).rename(columns={'fBodyGyroJerkMag':'fBodyGyroJerkMag-MeanFreq-1'})
+            df_feature.append(x)
+            
+            # fBodyGyroJerkMag-Skewness-1            
+            # fBodyGyroJerkMag-Kurtosis-1            
+            x=pd.DataFrame(df_f['fBodyGyroJerkMag'].apply(lambda x: skew(x))).rename(columns={'fBodyGyroJerkMag':'fBodyGyroJerkMag-Skewness-1'})
+            df_feature.append(x)  
+            
+            x=pd.DataFrame(df_f['fBodyGyroJerkMag'].apply(lambda x: kurtosis(x))).rename(columns={'fBodyGyroJerkMag':'fBodyGyroJerkMag-Kurtosis-1'})
+            df_feature.append(x)   
             
             # tBodyAcc-AngleWRTGravity-1     
             # tBodyAccJerk-AngleWRTGravity-1 
