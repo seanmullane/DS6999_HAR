@@ -2,7 +2,7 @@ import glob
 import numpy as np
 import os
 import pandas as pd
-from sklearn import svm
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn import metrics
 from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import classification_report
@@ -13,7 +13,7 @@ path_train = 'F://DS 6999//project//train//*.csv'
 files_test = glob.glob(path_test)
 files_train = glob.glob(path_train)
 
-os.chdir('F:\DS 6999\project\svm')
+os.chdir('F:\DS 6999\project\knn')
 
 # Helpful for selecting parameters
 # http://scikit-learn.org/stable/auto_examples/model_selection/plot_grid_search_digits.html#sphx-glr-auto-examples-model-selection-plot-grid-search-digits-py
@@ -31,20 +31,22 @@ def param():
         Y = pd.read_table(files_train[i+1], sep='\s', header=None, engine='python')
         X_t = pd.read_table(files_test[i], sep='\s', engine='python')
         Y_t = pd.read_table(files_test[i+1], sep='\s', header=None, engine='python')
-        
-        param = [{'C': [1, 10, 100, 1000], 'kernel': ['linear']}, {'C': [1, 10, 100, 1000], 'gamma': [0.001, 0.0001], 'kernel': ['rbf']},]
-        svc = svm.SVC()
-        clf = GridSearchCV(svc, param, scoring='accuracy')
-        clf.fit(X, Y.values.ravel())
-        print(clf.best_params_)
+        #http://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KNeighborsClassifier.html
+        num = np.arange(5, 9)
+        met =['minkowski','manhattan','euclidean']
+        param = [{'n_neighbors':num, 'metric': met}]
+        knn = KNeighborsClassifier()
+        nei = GridSearchCV(knn, param, scoring='accuracy')
+        nei.fit(X, Y.values.ravel())
+        print(nei.best_params_)
         print()
-        y_true, y_pred = Y_t, clf.predict(X_t)
+        y_true, y_pred = Y_t, nei.predict(X_t)
         print(classification_report(y_true, y_pred))
 # Results
-# 1s      --- C: 1, kernal: linear
-# Other s --- C:1000, gamma:0.0001, kernel: rbf       
+# Manhattan and 7-8
 
-def supp():
+
+def knn():
     # Iterate through every pair of files
     # Initialize final dataframe
     df_out = pd.DataFrame(columns=['Hz','s','Accuracy','Avg_Precision','Avg_F_Measure','Avg_Recall',
@@ -89,18 +91,18 @@ def supp():
             seconds = 1
         print('hz',hz,'seconds',seconds)
     
-        # Create the SVM model
-        supp = svm.SVC(C=1000, gamma=0.0001, kernel='rbf')
+        # Create the KNN model
+        knn = KNeighborsClassifier(n_neighbors=7, metric='manhattan')
             
         # Model and fit
-        supp.fit(X, Y.values.ravel())
-        predictions = supp.predict(X_t)
+        knn.fit(X, Y.values.ravel())
+        predictions = knn.predict(X_t)
         
         # Accuracy
         accuracy = metrics.accuracy_score(Y_t[0],predictions)
         # Precision (by label)
         precision = metrics.precision_score(Y_t[0],predictions,average=None)
-        precision_mean = metrics.precision_score(Y_t[0],predictions,average='weighted')
+        precision_mean =  metrics.precision_score(Y_t[0],predictions,average='weighted')
         # F Measure (by label)
         f1 = metrics.f1_score(Y_t[0],predictions,average=None)
         f1_mean = metrics.f1_score(Y_t[0],predictions,average='weighted')
@@ -112,9 +114,9 @@ def supp():
         df_out.loc[ct] = [hz, seconds, accuracy, precision_mean, f1_mean, recall_mean,
                   precision, f1, recall]
     
-    df_out.to_csv('svm.csv',sep='\t',index=False)
+    df_out.to_csv('knn.csv',sep='\t',index=False)
     return(df_out.sort_values(by=['Hz','s']).reset_index(drop=True))
 
         
 if __name__ == '__main__':
-    out=supp()
+    out=knn()
