@@ -91,7 +91,8 @@ for (j in 1:4) {
     # H_0: difference in mean accuracy between samples is 0
     # H_A: mean accuracy in sample 1 is greater than mean accuracy in sample 2
     tt <- t.test(unlist(d.res[best_ind,3:12]), unlist(d.res[i,3:12]), alternative = "greater", mu = 0)
-    m.pval[[i]] <- round(tt$p.value, digits = 4)
+    #m.pval[[i]] <- round(tt$p.value, digits = 4)
+    m.pval[[i]] <- tt$p.value
   }
   
   print(m.pval)
@@ -99,9 +100,28 @@ for (j in 1:4) {
   l.alloutputs[[j]] <- list(m.acc, m.sd, m.pval)
 }
 
+# Print p-values
 for (j in 1:4) {
   print(names(l.allmodels)[[j]])
-  print(l.alloutputs[[j]][[3]])
+  print(format(round(l.alloutputs[[j]][[3]], digits = 4), nsmall = 4, scientific = F))
+}
+
+# Print p-values with Bonferroni correction applied
+for (j in 1:4) {
+  print(names(l.allmodels)[[j]])
+  print(format(round(l.alloutputs[[j]][[3]]*19, digits = 4), nsmall = 4, scientific = F))
+}
+
+# Print mean accuracy values
+for (j in 1:4) {
+  print(names(l.allmodels)[[j]])
+  print(format(round(l.alloutputs[[j]][[1]], digits = 4), nsmall = 4, scientific = F))
+}
+
+# Print standard deviation values
+for (j in 1:4) {
+  print(names(l.allmodels)[[j]])
+  print(format(round(l.alloutputs[[j]][[2]], digits = 4), nsmall = 4, scientific = F))
 }
 
 # Need to apply bonferroni correction for multiple comparisons
